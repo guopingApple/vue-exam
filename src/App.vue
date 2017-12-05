@@ -83,6 +83,7 @@
   #login .box .el-input__inner{height: 46px;-webkit-box-shadow: 0 0 0px 1000px white inset;box-shadow: 0 0 0px 1000px white inset;}
   #login .box .el-form-item{margin-bottom: 20px;}
   .el-tabs__content{overflow: auto;}
+  /* .el-menu-vertical-demo div:first-child  li.is-opened .el-menu li:first-child{background-color: #d1dbe5;color: #409EFF;} */
 </style>
 
 <script>

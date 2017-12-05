@@ -64,6 +64,7 @@
       // this.getPubData();
       // console.log(this.user.userName )
       console.log('main init>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+
     },
     computed: {
       getPageTitle () {
