@@ -82,6 +82,7 @@
   .w_880{width: 880px;}
   #login .box .el-input__inner{height: 46px;-webkit-box-shadow: 0 0 0px 1000px white inset;box-shadow: 0 0 0px 1000px white inset;}
   #login .box .el-form-item{margin-bottom: 20px;}
+  .el-tabs__content{overflow: auto;}
 </style>
 
 <script>

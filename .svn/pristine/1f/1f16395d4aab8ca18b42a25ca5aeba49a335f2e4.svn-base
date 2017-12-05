@@ -5,12 +5,12 @@
         <el-form :model="userForm" :rules="userRules" ref="userForm">
           <div class="center chinaMobile"><img src="../assets/chinaMobile.png" alt=""></div>
           <el-form-item label="" prop="userName">
-            <el-input v-model="userForm.userName" placeholder="请输入登录名" @keyup.enter.native="submitForm('userForm')">
+            <el-input v-model="userForm.userName" placeholder="请输入登录邮箱">
               <!-- <template slot="append">@zhiruyi.com</template> -->
             </el-input>
           </el-form-item>
           <el-form-item label="" prop="password" style="margin-bottom:30px;">
-            <el-input type="password" v-model="userForm.password" placeholder="请输入密码" @keyup.enter.native="submitForm('userForm')">
+            <el-input type="password" v-model="userForm.password" placeholder="请输入密码">
             </el-input>
           </el-form-item>
           <el-form-item>
@@ -72,16 +72,7 @@
       }
     },
     mounted: function () {
-      // console.log(sessionStorage.password)
-      this.bodyListener = (e) => {
-        if (e.keyCode === 13 && e.target === document.body){
-          this.submitForm('userForm')
-        }
-      }
-      document.body.addEventListener('keyup', this.bodyListener, false)
-    },
-    beforeDestroy() {
-      document.body.removeEventListener('keyup', this.bodyListener)
+      console.log(sessionStorage.password)
     },
     methods: {
       submitForm(formName) {

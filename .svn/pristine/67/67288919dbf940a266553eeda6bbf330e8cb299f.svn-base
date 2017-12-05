@@ -2,7 +2,7 @@
   <div id="leftMenu">
     <el-menu :default-openeds='["在线考试"]' default-active="2" @select="selectItems" class="el-menu-vertical-demo" style = "background-color:#e6e6e6;border:0">
       <div v-for="menuItem in menuList">
-        <el-submenu v-if="menuItem.link==''" :index="menuItem.name" style = "background-color:#e6e6e6;border:0">
+        <el-submenu v-if="menuItem.link==''" :index="menuItem.name">
           <template slot="title"><i v-bind:class="menuItem.icon"></i>{{menuItem.name}}</template>
           <el-menu-item style="padding:0 0 0 40px" v-for="menuItemChild in menuItem.children" :key="menuItemChild.id" :index="menuItemChild.name">
             <router-link :to="menuItemChild.link"><i v-bind:class="menuItemChild.icon"></i>{{menuItemChild.name}}</router-link>
