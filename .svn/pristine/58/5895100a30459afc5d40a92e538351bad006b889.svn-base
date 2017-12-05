@@ -1,0 +1,70 @@
+<template>
+  <div class="w_880 p20">
+      <el-form ref="form" :model="form" :rules="rules" label-width="110px">
+        <el-form-item label="角色名称" prop="name">
+            <el-input v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="角色分类" prop="roleClass">
+            <el-select v-model="form.roleClass" placeholder="请选择">
+                <el-option label="总部" value=""></el-option>
+                <el-option label="移动公司" value=""></el-option>
+                <el-option label="供应商" value=""></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="state">
+            <el-select v-model="form.state" placeholder="请选择">
+            <el-option label="启用" value=""></el-option>
+            <el-option label="禁用" value=""></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+            <el-input type="textarea" :rows="3"  v-model="form.remark"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
+            <el-button>关闭</el-button>
+        </el-form-item>
+      </el-form>
+  </div>
+</template>
+<script>
+export default {
+  data(){
+    return{
+        form:{
+            name: '',
+            roleClass: '',
+            state: '',
+            remark: ''
+        },
+        rules: {
+            name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+            ],
+            roleClass: [
+            { required: true, message: '角色分类', trigger: 'change' }
+            ],
+            state: [
+            { required: true, message: '请选择状态', trigger: 'change' }
+            ]
+        }
+    }
+  },
+  methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
+    }
+}
+</script>

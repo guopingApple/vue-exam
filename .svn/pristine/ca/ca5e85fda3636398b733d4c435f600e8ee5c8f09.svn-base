@@ -1,0 +1,226 @@
+<template>
+    <div style="background-color:#fff;">      
+        <div id="tree">
+            <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick" highlight-current default-expand-all></el-tree>
+            <el-button type="primary" class="button" v-show="show" @click="editInfo">修改</el-button>
+            <el-button type="primary" class="button" v-show="show" @click="addPot">添加权限</el-button>
+            <el-button type="primary" class="button" v-show="showadd" @click="addInfo">添加</el-button>
+            <el-button type="primary" class="button" v-show="showdele" @click="handleDelete">删除</el-button>           
+        </div>
+        <div class="popUpcontent" v-show="shows">
+            <div class="contentbox">
+                <ul class="content">
+                    <li>
+                        <label>父级菜单:</label><span>{{detail.parentName}}</span>
+                    </li>
+                    <li>
+                        <label>名称:</label><span>{{detail.name}}</span>
+                    </li>
+                    <li>
+                        <label>标识:</label><span>{{detail.shortName}}</span>
+                    </li>
+                    <li>
+                        <label>访问链接:</label><span>{{detail.url}}</span>
+                    </li>
+                    <li>
+                        <label>状态:</label><span>{{detail.status}}</span>
+                    </li>
+                    <li>
+                        <label>排序:</label><span>{{detail.priority}}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>    
+<style scoped>
+    /* .el-form--inline .el-form-item{ margin-bottom:10px;} */
+    #tree{
+        width: 20%;
+        float: left;
+        height:100%;
+        background-color: #fff;
+        min-height: 565px;
+        text-align: center;
+    }
+    
+    .popUpcontent{
+        width:700px;
+        background: #fff;
+        height: auto;
+        min-height: 565px;
+        box-sizing: border-box;
+        /* position: absolute;
+        
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        right: 0; */
+        /* margin: 0 auto; */
+        padding:10px;
+        float: left;
+    }
+    .contentbox{
+        width:100%;
+    }
+    .contentbox h2{
+        font-size: 16px;
+        border-bottom: 1px solid #ececec;
+        padding-bottom: 5px;
+    }
+    .content{
+        overflow: hidden;
+    }
+    .content li{
+        width: 100%;
+        box-sizing: border-box;
+        line-height: 40px;
+    }
+    .content li:after{
+        display: table;
+        content: "";
+        clear: both;
+    }
+    .content label{
+        width: 15%;
+        float: left;
+        text-align: right;
+    }
+    .content span{
+        width: 85%;
+        float: left;
+        text-align: left;
+        display:inline-block;
+        padding:0 10px;
+        box-sizing: border-box;
+    }
+    .button{
+        width: 70%;
+        margin-top: 10px;
+    }
+    .el-button+.el-button{
+        margin-left: 0;
+    }
+</style>
+<script>
+ import $ from 'jquery' 
+ import qs from 'qs'
+ import axios from 'axios'
+ export default {
+    data() {
+      return {
+        show:false,
+        showadd:false,
+        showdele:false,
+        shows:false,
+        child:{},
+        data: [],
+        defaultProps: {
+          children: 'children',
+          label: 'label'
+        },
+        detail:{}
+      }
+    },
+    mounted(){
+        this.list()
+    },
+    methods: {
+      addInfo:function(){
+          this.$router.push({path: '/menuAdd',query:{parentName:this.child.label,parentId:this.child.id,level:this.child.level}});		
+      },
+      addPot:function(){
+          this.$router.push({path: '/menuAddPot',query:{parentName:this.child.label,parentId:this.child.id}});		
+      },
+      handleDelete:function(){
+        let that=this;
+        console.log(this.child)
+        this.$confirm('您确定要删除?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+        }).then(() => {
+            let param=qs.stringify({'id':this.child.id})           
+            this.axios.post(this.biz.serverUrl+'resource/delete/'+this.child.id,param, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+                if(res.data.code==200){                    
+                    that.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                    that.list()
+                }else{
+                    that.$message({
+                        type: 'error',
+                        message: '删除失败!'
+                    });
+                }                
+            }).catch(function (res) {
+                console.log(res)
+            })       
+        }).catch(() => {
+            this.$message({
+                type: 'info',
+                message: '已取消删除'
+            });
+        });
+      },
+      editInfo:function(){
+          this.$router.push({path: '/menuEdit',query:{parentName:this.child.label,parentId:this.child.id,level:this.child.level}});	
+      },
+      handleNodeClick(data) {
+        this.child=data;
+        console.log(data)
+        this.details()
+        // this.role()
+        if(data.children){
+            this.showadd=true
+            this.showdele=true
+            this.show=false           
+        }else{
+            this.show=true
+            this.showadd=false
+            this.showdele=true
+            this.shows=true
+        }
+      },
+      list(){
+        let that=this
+        //   let pages=qs.stringify({'page':this.currentPage,'rows':this.pageSize})
+        let param=''
+        this.axios.post(this.biz.serverUrl+'resource/getResourceTree',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+            console.log(res)
+            if(res.data.code == 200){
+                that.data=res.data.datas
+            }
+        }).catch(function (res) {
+            console.log(res)
+        })
+      },
+      details(){
+        let that=this
+        let id=this.child.id
+        this.axios.get(this.biz.serverUrl+'resource/detail/'+id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.status==200){
+            that.detail=res.data.resource;
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      role(){
+        let that=this
+        let id=this.child.id
+        this.axios.get(this.biz.serverUrl+'permission/getpermissions/'+id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.status==200){
+            // that.detail=res.data.resource;
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      }
+    }
+  }
+</script>

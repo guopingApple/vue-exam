@@ -1,0 +1,385 @@
+<template>
+    <div>
+        <el-form ref="form" :model="form" inline class="pt15 pl20" label-width="80px">
+            <el-form-item label="培训主题">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>         
+            <el-form-item label="培训状态">
+                <el-select v-model="form.region" placeholder="请选择">
+                    <el-option label="未发布" value="notSet"></el-option>
+                    <el-option label="已发布" value="valid"></el-option>
+                    <el-option label="已关闭" value="novalid"></el-option>
+                </el-select>
+            </el-form-item>
+             <el-form-item label="创建人">
+                <el-input v-model="form.create"></el-input>
+            </el-form-item>
+            <el-form-item label="创建时间">
+                <el-col :span="11">
+                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
+                </el-col>
+                <el-col class="line center" :span="1">-</el-col>
+                <el-col :span="11">
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="form.date2" style="width: 100%;"></el-time-picker> -->
+                    <el-date-picker type="date" placeholder="选择日期" v-model="form.date2" style="width: 100%;"></el-date-picker>
+                </el-col>
+            </el-form-item>          
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">查询</el-button>
+                <el-button @click="resetForm('form')">重置</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row class="pr10">
+            <el-col :span="24" align="right">
+                <el-button type="primary" size="medium" @click="addInfo()">创建培训报名信息</el-button>
+                <el-button type="primary" size="medium">批量导出Excel</el-button>
+            </el-col>
+        </el-row>
+        <div class="p10">
+            <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 100%" @selection-change="handleSelectionChange">
+                <el-table-column
+                    type="selection"
+                    width="30">
+                </el-table-column>
+                <el-table-column
+                    type="index"
+                    width="50"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="培训主题"
+                    width="140"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="traindate"
+                    label="培训时间范围"
+                    width="120"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="enroldate"
+                    label="报名时间范围"
+                    width="120"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="state"
+                    label="状态"
+                    width="70"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="creatTime"
+                    label="创建时间"
+                    width="100"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="creatUser"
+                    label="创建人"
+                    width="70"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="signin"
+                    label="已报名人数"
+                    width="80">
+                    <template slot-scope="scope">                       
+                        <div slot="reference" class="name-wrapper">
+                            <el-button class='signinPeople' @click='toResult(scope.row.id)' size="mini">{{ scope.row.signin }}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="operation"
+                    label="操作"
+                    width="400">
+                    <template slot-scope="scope">
+                        <el-button @click="handleClick(scope.row.id)" type="primary" size="mini">查看</el-button>
+                        <el-button type="primary" size="mini" @click="setopen(scope.row.id)">发布</el-button>
+                        <el-button type="primary" size="mini" @click="editInfo(scope.row.id)">创建调研</el-button>
+                        <el-button type="danger" size="mini"  @click="handleDelete(scope.$index, scope.row)">创建签到</el-button>
+                        <el-button type="danger" size="mini"  @click="handleDelete(scope.$index, scope.row)">创建考试</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-sizes="[5,10, 20, 50, 100]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="tableData.length" style="margin:15px auto;text-align: center">
+            </el-pagination>
+        </div>
+        <div class="popUp" ref="popUp">
+            <div class="popUpcontent">
+                <el-button class='close' @click="close()">×</el-button>
+                <div class="contentbox">
+                    <h2>查看详情</h2>
+                    <ul class="content">
+                        <li>
+                            <label>姓名:</label><span></span>
+                        </li>
+                        <li>
+                            <label>员工编号:</label><span></span>
+                        </li>
+                        <li>
+                            <label>性别:</label><span></span>
+                        </li>
+                        <li>
+                            <label>民族:</label><span></span>
+                        </li>
+                        <li>
+                            <label>所属公司:</label><span></span>
+                        </li>
+                        <li>
+                            <label>所属部门:</label><span></span>
+                        </li>
+                        <li>
+                            <label>岗位名称:</label><span></span>
+                        </li>
+                        <li>
+                            <label>岗位年限:</label><span></span>
+                        </li>
+                        <li>
+                            <label>联系方式:</label><span></span>
+                        </li>
+                    </ul>
+                </div>
+            </div> 
+        </div>
+    </div>
+</template>    
+<style scoped>
+    .signinPeople{
+        width:100%;
+        display:inline-block;
+        border: none;
+        background: none;
+    }
+    .el-form--inline .el-form-item{ margin-bottom:10px;}
+    .popUp,.deck{
+        width:100%;
+        height: 100%;
+        background: rgba(0,0, 0, 0.5);
+        position: fixed;
+        left: 0;
+        top:0;
+        z-index: 2;
+        display: none;
+    }
+    
+    .popUpcontent{
+        width:700px;
+        background: #fff;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        padding:10px;
+    }
+    .contentbox{
+        width:100%;
+    }
+    .contentbox h2{
+        font-size: 16px;
+        border-bottom: 1px solid #ececec;
+        padding-bottom: 5px;
+    }
+    .content{
+        overflow: hidden;
+    }
+    .content li{
+        width: 100%;
+        box-sizing: border-box;
+        line-height: 40px;
+    }
+    .content li:after{
+        display: table;
+        content: "";
+        clear: both;
+    }
+    .content label{
+        width: 15%;
+        float: left;
+        text-align: right;
+    }
+    .content span{
+        width: 85%;
+        float: left;
+        text-align: left;
+    }
+    .close{
+        border: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 24px;
+        background: none;
+        z-index: 999;
+    }
+</style>
+<script>
+ import $ from 'jquery'
+ export default {
+    data() {
+      return {
+        form: {
+          name: '',
+          create:'',
+          region: '',
+          date1: '',
+          date2: ''
+        },
+        currentPage: 1,
+        pageSize: 10,
+        multipleSelection:[],
+        tableData:[
+            {
+                id: '1',
+                name: '测试条件2',
+                signin: '1',
+                time: '0分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '未设置',
+                type:"0",
+                operation: ''
+            },
+            {
+                id: '2',
+                name: '新疆移动Office 办公操作实务培训测',
+                signin: '0',
+                time: '120分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '有效',
+                type:"1",
+                operation: ''
+            },
+            {
+                id: '3',
+                name: '测试测试',
+                signin: '25',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '无效',
+                type:"2",
+                operation: ''
+            },
+            {
+                id: '4',
+                name: '测试测试',
+                signin: '25',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '无效',
+                type:"2",
+                operation: ''
+            },
+            {
+                id: '5',
+                name: '测试测试',
+                signin: '25',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '已发布',
+                type:"1",
+                operation: ''
+            },
+            {
+                id: '6',
+                name: '测试测试',
+                signin: '25',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '无效',
+                type:"2",
+                operation: ''
+            }
+        ]
+      }
+    },
+    methods: {
+      onSubmit() {
+        console.log('submit!');
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+      },
+      handleCurrentChange: function (currentPage) {
+        this.currentPage = currentPage
+      },
+      handleClick:function(id){
+          $(".popUp").show();
+      },
+      toResult:function(id){
+          this.$router.push({path: '/enrolResult',query:{id:id}});		
+      },
+      addInfo:function(){
+          this.$router.push({path: '/enrolAdd'});		
+      },
+      handleDelete:function(index,data){
+        this.$confirm('您确定要删除?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+        }).then(() => {
+            this.$message({
+                type: 'success',
+                message: '删除成功!'
+            });
+            this.tableData.splice(index,1)
+        }).catch(() => {
+            this.$message({
+                type: 'info',
+                message: '已取消删除'
+            });
+        });         
+      },
+      editInfo:function(id){
+          this.$router.push({path: '/enrolEdit',query:{id:id}});	
+      },
+      setopen:function(id) {
+        this.$confirm('您确定要发布?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '发布成功!'
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消发布'
+          });
+        });
+      },
+      close:function(){
+          $(".popUp").hide();
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      }
+    }
+  }
+</script>

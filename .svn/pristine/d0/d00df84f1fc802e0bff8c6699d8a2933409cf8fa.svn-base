@@ -1,0 +1,222 @@
+<template>
+    <div style="margin-top:15px;">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" :inline-message='blone'>
+            <el-form-item label="用户名" prop="userName">
+                <el-input v-model="ruleForm.userName" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+                <el-input v-model="ruleForm.password" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="用户名称" prop="name">
+                <el-input v-model="ruleForm.name" class="textInput"></el-input>
+            </el-form-item>
+            <!-- <el-form-item label="公司ID" prop="companyId">
+                <el-input v-model="ruleForm.companyId" class="textInput"></el-input>
+            </el-form-item> -->
+            <el-form-item label="所属公司" prop="companyId">
+                <el-select v-model="ruleForm.companyId" placeholder="请选择">
+                  <el-option v-for="v in companys" :label="v.name" :value="v.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <!-- <el-form-item label="公司类型" prop="companyId">
+                <el-select v-model="ruleForm.companyId" placeholder="请选择">
+                    <el-option label="禁用" value="1"></el-option>
+                    <el-option label="启用" value="2"></el-option>
+                </el-select>
+            </el-form-item> -->
+            <!-- <el-form-item label="联系人" prop="contactUser">
+                <el-input v-model="ruleForm.contactUser" class="textInput"></el-input>
+            </el-form-item> -->
+            <el-form-item label="电话" prop="phone">
+                <el-input v-model="ruleForm.phone" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="ruleForm.email" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="ruleForm.status" placeholder="请选择">
+                    <el-option label="禁用" value="0"></el-option>
+                    <el-option label="启用" value="1"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="备注" prop="comment">
+                <el-input v-model="ruleForm.comment" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                <el-button @click="resetForm('ruleForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
+<style scoped>
+    .el-form-item{ margin-bottom:10px;}
+    .el-input{
+        width:50%;
+    }
+</style>
+<script>
+  var qs = require('qs')
+  var axios = require('axios')
+  import $ from 'jquery' 
+  export default {
+    data() {
+      var checkCode = (rule, value, callback) => {
+        if (value === '') {
+            callback(new Error('请输入密码'));
+        } else {
+            let reg=/^[A-Za-z0-9]+$/;
+              if(!reg.test(value)){
+                  callback(new Error('请输入正确的密码'));
+              }
+            callback();
+        }
+      };
+      var checkUser = (rule, value, callback) => {
+        if (value === '') {
+            callback(new Error('请输入用户名'));
+        } else {
+            let reg=/^[A-Za-z0-9]+$/;
+              if(!reg.test(value)){
+                  callback(new Error('请输入正确的用户名'));
+              }
+            callback();
+        }
+      };
+      var checkPassword = (rule, value, callback) => {
+        if (value === '') {
+            callback(new Error('请输入密码'));
+        } else {
+            let reg=/^[a-zA-Z]\w{5,14}$/;
+              if(!reg.test(value)){
+                  callback(new Error('请输入由字母、数字、下划线组成6-15位字符'));
+              }
+            callback();
+        }
+      };
+      var checkPhone= (rule, value, callback) => {
+        if (value === '') {
+            // callback();
+        }else{        
+          let reg=/^1(3|4|5|7|8)\d{9}$/;
+            if(!reg.test(value)){
+                callback(new Error('请输入正确的电话号码'));
+            }
+          callback();
+        }
+      };
+      var checkName = (rule, value, callback) => {
+          let reg=/^[\w\u3E00-\u9FA5]+$/;
+            if(!reg.test(value)){
+                callback(new Error('请输入正确的用户名'));
+            }
+          callback();
+      }
+      var checkUser = (rule, value, callback) => {
+          let reg=/^[\w\u3E00-\u9FA5]+$/;
+            if(!reg.test(value)){
+                callback(new Error('请输入正确的用户名'));
+            }
+          callback();
+      }
+      return {
+        blone:true,
+        ruleForm: {
+          userName: '',
+          password:'',
+          name:'',
+          phone:'',
+          email:'',
+          contactUser:'',
+          status:'',
+          companyId:'',
+          // companyName:'',         
+          comment:''
+        },
+        rules: {
+          companyId:[
+            { required: true, message: '请选择所属公司', trigger: 'blur' }
+          ],
+          name: [
+            { required: true, message: '请输入用户名', trigger: 'blur' },
+            { min: 1, max: 50, message: '由字母、数字、下划线组成1-50位字符', trigger: 'blur' },
+            { validator: checkName, trigger: 'blur' }
+          ],
+          userName:[
+            { required: true,  validator: checkUser, trigger: 'blur' },
+            { min: 1, max:50, message: '由字母、数字、下划线组成1-50位字符', trigger: 'blur' },
+            { validator: checkUser, trigger: 'blur' }
+          ],
+          password:[
+            { required: true,  validator: checkPassword, trigger: 'blur' }
+            // { min: 6, max: 15, message: '由字母、数字、下划线组成6-15位字符', trigger: 'blur' }
+          ],
+          status: [
+            { required: true, message: '请选择状态', trigger: 'blur' },
+          ],
+          contactPhone:[
+            { validator: checkPhone, trigger: 'blur' }
+          ],
+          email:[
+            { required: true, message: '请填写邮箱地址', trigger: 'blur' },
+            { type: 'email', message: '请填写正确的邮箱地址', trigger: 'blur'},
+            { min: 1, max: 50, message: '1-50位字符组成', trigger: 'blur' }
+          ]
+        },
+        companys:[]
+      };
+    },
+    mounted(){
+      this.companyList()
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            // alert('submit!');
+            let that = this
+            let param = qs.stringify(this.ruleForm)
+            console.log(param,this.biz.examUrl)
+            this.axios.post(this.biz.serverUrl+'user/save',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+              console.log(res)
+              if(res.data.code==200){             
+                that.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                });
+                that.$router.push({path: '/userManage'});
+              }else{
+                that.$message({
+                    type: 'error',
+                    message: '添加失败!'
+                });
+              }
+              // _this.tableData = res.data.datas
+              // _this.form = res.data.fsp
+            }).catch(function (res) {
+              console.log(res)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      companyList(){
+        let that = this
+        let pages=qs.stringify({'page':'1','rows':'1000'})
+        this.axios.post(this.biz.serverUrl+'company/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.companys=res.data.datas              
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      }
+    }
+  }
+</script>

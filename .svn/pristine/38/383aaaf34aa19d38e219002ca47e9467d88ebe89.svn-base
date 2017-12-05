@@ -1,0 +1,396 @@
+<template>
+    <div>
+        <el-form ref="form" :model="form" inline class="pt15 pl20" label-width="80px">
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="员工编号" prop="code">
+                <el-input v-model="form.code"></el-input>
+            </el-form-item>
+            <el-form-item label="所属公司" prop="company">
+                <el-select v-model="form.company" placeholder="请选择">
+                    <el-option v-for="v in companys" :label="v.name" :value="v.name"></el-option>
+                    <!-- <el-option label="山西以偶定" value="beijing"></el-option> -->
+                </el-select>
+            </el-form-item> 
+            <el-form-item label="创建时间">
+                <el-col :span="11">
+                    <el-form-item prop="startTime">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+                <el-col class="line center" :span="1">-</el-col>
+                <el-col :span="11">
+                    <el-form-item prop="endTime">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                </el-col>
+            </el-form-item>  
+              
+            <el-form-item label="岗位名称" prop="position">
+                <el-input v-model="form.position"></el-input>
+            </el-form-item>
+            
+            
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit('form')">查询</el-button>
+                <el-button @click="resetForm('form')">重置</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row class="pr10">
+            <el-col :span="24" align="right">
+                <el-button type="primary" size="medium" @click="excel()">批量导出Excel</el-button>
+            </el-col>
+        </el-row>
+        <div class="p10">
+            <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 100%" @selection-change="handleSelectionChange">
+                <el-table-column
+                    type="selection"
+                    width="30">
+                </el-table-column>
+                <el-table-column
+                    type="index"
+                    width="50"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="姓名"
+                    width="270"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="code"
+                    label="员工编号"
+                    width="110"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="company"
+                    label="所属公司"
+                    width="180"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="position"
+                    label="岗位名称"
+                    width="160"
+                    >
+                </el-table-column>                
+                <!-- <el-table-column
+                    prop="status"
+                    label="状态"
+                    width="80">
+                </el-table-column> -->
+                <el-table-column
+                    prop="operation"
+                    label="操作">
+                    <template slot-scope="scope">
+                        <el-button @click="handleClick(scope.row)" type="primary" size="mini">查看详情</el-button>                      
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :page-sizes="[10, 15]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :pageCount="pageCount" style="margin:15px auto;text-align: center">
+            </el-pagination>
+        </div>
+        <div class="popUp" ref="popUp">
+            <div class="popUpcontent">
+                <el-button class='close' @click="close()">×</el-button>
+                <div class="contentbox">
+                    <h2>查看报名结果详情</h2>
+                    <ul class="content">
+                        <li>
+                            <label>姓名:</label><span>{{detail.name}}</span>
+                        </li>
+                        <li>
+                            <label>员工编号:</label><span>{{detail.code}}</span>
+                        </li>
+                        <li>
+                            <label>性别:</label><span>{{detail.gender1}}</span>
+                        </li>
+                        <li>
+                            <label>民族:</label><span>{{detail.nation}}</span>
+                        </li>
+                        <li>
+                            <label>所属公司:</label><span>{{detail.company}}</span>
+                        </li>
+                        <li>
+                            <label>所属部门:</label><span>{{detail.department}}</span>
+                        </li>
+                        <li>
+                            <label>岗位名称:</label><span>{{detail.position}}</span>
+                        </li>
+                        <li>
+                            <label>岗位年限:</label><span>{{detail.postionYears}}</span>
+                        </li>
+                        <li>
+                            <label>联系方式:</label><span>{{detail.phone}}</span>
+                        </li>
+                    </ul>
+                    <div style="text-align:center;margin-top:10px;">
+                        <el-button type="primary" @click="close()">关闭</el-button>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</template>    
+<style scoped>
+    .el-form--inline .el-form-item{ margin-bottom:10px;}
+    .el-input{
+        width:200px;
+    }
+    .popUp,.deck{
+        width:100%;
+        height: 100%;
+        background: rgba(0,0, 0, 0.5);
+        position: fixed;
+        left: 0;
+        top:0;
+        z-index: 2; 
+        display: none;
+    }
+    
+    .popUpcontent{
+        width:700px;
+        background: #fff;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        padding:10px;
+    }
+    .contentbox{
+        width:100%;
+    }
+    .contentbox h2{
+        font-size: 16px;
+        border-bottom: 1px solid #ececec;
+        padding-bottom: 5px;
+    }
+    .content{
+        overflow: hidden;
+    }
+    .content li{
+        width: 100%;
+        box-sizing: border-box;
+        line-height: 40px;
+    }
+    .content li:after{
+        display: table;
+        content: "";
+        clear: both;
+    }
+    .content label{
+        width: 15%;
+        float: left;
+        text-align: right;
+    }
+    .content span{
+        width: 85%;
+        float: left;
+        text-align: left;
+        display: inline-block;
+        box-sizing: border-box;
+        padding-left: 15px;
+    }
+    .content span{
+        width: 85%;
+        float: left;
+        text-align: left;
+    }
+    .close{
+        border: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 24px;
+        background: none;
+        z-index: 999;
+    }
+    #myCharts{
+        height: 200px;
+        width:700px;
+    }
+</style>
+<script>
+import $ from 'jquery'
+import qs from 'qs'
+import axios from 'axios'
+    export default {
+    data() {
+      return {
+        form: {
+          name: '',
+          code:'',
+          company:'',
+          position:'',
+          startTime: '',
+          endTime: ''
+        },
+        currentPage: 1,
+        pageSize: 10,
+        pageCount:0,
+        multipleSelection:[],
+        tableData:[],
+        detail:{},
+        tableData:[],
+        companys:[]
+      }
+    },
+    mounted:function(){
+        this.list()
+        this.companyList()
+    },
+    methods: {
+      onSubmit(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let that = this
+            let id=this.$route.query.id;
+            this.form.page=this.currentPage;
+            this.form.limit=this.pageSize;
+            if(id!='undefined'){
+                this.form.enrolId=id;
+            }
+            let param = qs.stringify(this.form)
+            console.log(param)
+            this.axios.post(this.biz.serverUrl+'enrol/getEncrolEmpl',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+              console.log(res)
+              if(res.data.code==200){         
+                  that.tableData=res.data.datas
+                //   that.pageSize=res.data.fsp.pageSize
+                  that.pageCount=res.data.fsp.pageCount
+                  that.currentPage=res.data.fsp.page
+                  that.tableData.forEach(function(v,i){                   
+                    let time=new Date(that.tableData[i].createTime)
+                    that.tableData[i].createTime=that.getTimer(time)
+                  })
+              }
+            }).catch(function (res) {
+              console.log(res)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+        this.list()
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+      },
+      handleCurrentChange: function (currentPage) {
+        this.currentPage = currentPage
+      },
+      handleClick:function(data){
+        $(".popUp").show();
+        let that=this;
+        this.axios.get(this.biz.serverUrl+'enrol/'+data.id+'/employee',{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+            that.detail=res.data.element   
+            if(that.detail.gender==1){
+                that.detail.gender1='男'
+            }else if(that.detail.gender==2){
+                that.detail.gender1='女'
+            }     
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+        // this.detail=data;
+      },
+      close:function(){
+          $(".popUp").hide();
+          $(".deck").hide();
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
+      companyList(){
+        let that = this
+        let pages=qs.stringify({'page':'1','rows':'1000'})
+        this.axios.post(this.biz.serverUrl+'company/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.companys=res.data.datas              
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      list(){
+        let that = this
+        let id=this.$route.query.id;
+        let pages;
+        if(id=='undefined'){
+            pages=qs.stringify({'page':this.currentPage,'limit':this.pageSize})
+        }else{
+            pages=qs.stringify({'page':this.currentPage,'limit':this.pageSize,'enrolId':id})
+        }        
+        this.axios.post(this.biz.serverUrl+'enrol/getEncrolEmpl', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.tableData=res.data.datas
+              console.log(that.tableData)
+            //   that.pageSize=res.data.fsp.pageSize      //每页的条数
+              that.pageCount=res.data.fsp.pageCount      //页总数
+              that.currentPage=res.data.fsp.page        //当前页
+              that.tableData.forEach(function(v,i){                   
+                let time=new Date(that.tableData[i].createTime)
+                that.tableData[i].createTime=that.getTimer(time)
+              })
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      excel(){
+        console.log(this.multipleSelection)
+        let id=this.$route.query.id;
+        let that = this
+        let param = qs.stringify(this.form)       
+        if(this.multipleSelection.length==0){
+            if(id=='undefined'){
+                window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?name='+this.form.name+'&code='+this.form.code+'&startTime='+this.form.startTime+'&endTime='+this.form.endTime+'&company='+this.form.company+'&position='+this.form.position)
+            }else{
+                window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?name='+this.form.name+'&code='+this.form.code+'&startTime='+this.form.startTime+'&endTime='+this.form.endTime+'&company='+this.form.company+'&position='+this.form.position+'&enrolId='+id)
+            }
+            
+        }else{
+            let ids=''
+            this.multipleSelection.forEach(function(v,i){
+                if(i==that.multipleSelection.length-1){
+                    ids+=v.id
+                }else{
+                    ids+=v.id+','
+                }
+            })
+            console.log(ids)
+            if(id=='undefined'){
+                window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?ids='+ ids )
+            }else{
+                window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?ids='+ ids +'&enrolId='+id)
+            }
+            
+
+        }
+      }
+    }
+  }
+</script>

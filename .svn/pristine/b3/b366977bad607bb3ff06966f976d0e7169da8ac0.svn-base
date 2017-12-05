@@ -1,0 +1,431 @@
+<template>
+  <div>
+    <el-tabs type="border-card">
+        <el-tab-pane label="考生结果">
+            <el-form ref="form" :model="form" inline class="pt15">
+                <el-form-item label="姓名：">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="工号：">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="所属公司：">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="分数：">
+                    <el-input v-model="form.name"></el-input>
+                </el-form-item>
+                <el-form-item label="状态：">
+                    <el-select v-model="form.region" placeholder="请选择">
+                        <el-option label="未考" value=""></el-option>
+                        <el-option label="通过" value=""></el-option>
+                        <el-option label="未通过" value=""></el-option>
+                        <el-option label="未阅卷" value=""></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="创建时间">
+                    <el-date-picker
+                        v-model="value7"
+                        type="daterange"
+                        align="right"
+                        unlink-panels
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        :picker-options="pickerOptions">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit">查询</el-button>
+                    <el-button @click="resetForm('form')">重置</el-button>
+                </el-form-item>
+            </el-form>
+
+            <el-row class="pr10">
+                <el-col :span="24" align="right">
+                    <el-button type="primary">批量导出考卷</el-button>
+                </el-col>
+            </el-row>
+            <div class="p10">
+                <el-table :data="tableData.slice((currentPage-1)*pageSize,currentPage*pageSize)" style="width: 100%">
+                    <el-table-column
+                        prop="id"
+                        label="序号"
+                        width="60"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="name"
+                        label="姓名"
+                        width="270"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="code"
+                        label="员工编号"
+                        width="90"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="createTime"
+                        label="所属单位"
+                        width="100"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="updateTime"
+                        label="分数"
+                        width="160"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="email"
+                        label="状态"
+                        width="110"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="status"
+                        label="排名"
+                        width="80">
+                    </el-table-column>
+                    <el-table-column
+                        prop="status"
+                        label="交卷时间"
+                        width="">
+                    </el-table-column>
+                    <el-table-column
+                        prop="operation"
+                        label="操作" width="150">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="marking">阅卷</el-button>
+                            <el-button @click="view" type="primary" size="mini">查看</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页-->
+                <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[5,10, 20, 50, 100]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="tableData.length" style="margin:15px auto;text-align: center">
+                </el-pagination>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="考试统计">
+            <el-row :gutter="20" class="examPercent">
+                <el-col :span="12">
+                    <el-card class="box-card center">
+                        <h3>50%</h3>
+                        <h6>通过率</h6>
+                        <p>
+                            <span>通过人数：50</span>
+                            <span>考试人数：100</span>
+                        </p>
+                    </el-card>
+                </el-col>
+                <el-col :span="12">
+                    <el-card class="box-card center">
+                        <h3>81.29</h3>
+                        <h6>平均分</h6>
+                        <p>
+                            <span>最高分：100.0</span>
+                            <span>最低分：0.0</span>
+                        </p>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="答题分析">
+            <div class="analysis">
+                <h3>1.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="analysis">
+                <h3>2.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="analysis">
+                <h3>3.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </el-tab-pane>
+    </el-tabs>
+  </div>
+</template>
+<style scoped>
+.examPercent{line-height: 30px;}
+.examPercent .el-card{background-color:#f7f7f7;padding: 10px 0;}
+.examPercent .el-card h3{font-size: 30px;color: rgb(0, 102, 255)}
+.examPercent .el-card h6{padding: 10px 0;}
+.examPercent .el-card span{display: inline-block;margin: 0 30px;}
+.analysis h3{padding: 20px 0;}
+.analysis tr.selected{color: rgb(255, 204, 0);}
+.analysis table{border:1px solid #e6ebf5;}
+.analysis td,.analysis th{border-right:1px solid #e6ebf5;padding: 12px 10px;}
+.analysis{border:1px solid #e6ebf5;border-bottom: 0;}
+/* .el-tabs--border-card>.el-tabs__content{padding-bottom: 40px;} */
+</style>
+
+<script>
+  export default {
+    data() {
+      return {
+          pickerOptions: {
+            shortcuts: [{
+                text: '最近一周',
+                onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                    picker.$emit('pick', [start, end]);
+                }
+            }, {
+                text: '最近一个月',
+                onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    picker.$emit('pick', [start, end]);
+                }
+            }, {
+                text: '最近三个月',
+                onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                    picker.$emit('pick', [start, end]);
+                }
+            }]
+        },
+        value7: '',
+        form: {
+          name: '',
+          create:'',
+          region: ''
+          
+        },
+        currentPage: 1,
+        pageSize: 10,
+        // tableData:[]
+        tableData:[
+            {
+                id: '1',
+                name: '测试条件2',
+                score: '100分',
+                time: '0分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '未发放',
+                operation: ''
+            },
+            {
+                id: '2',
+                name: '新疆移动Office 办公操作实务培训测',
+                score: '100分',
+                time: '120分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '已关闭',
+                operation: ''
+            },
+            {
+                id: '3',
+                name: '测试测试',
+                score: '120分',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '已发放',
+                operation: ''
+            },
+            {
+                id: '4',
+                name: '测试条件2',
+                score: '100分',
+                time: '0分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '未发放',
+                operation: ''
+            },
+            {
+                id: '5',
+                name: '新疆移动Office 办公操作实务培训测',
+                score: '100分',
+                time: '120分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '已关闭',
+                operation: ''
+            },
+            {
+                id: '6',
+                name: '测试测试',
+                score: '120分',
+                time: '60分钟',
+                date: '2017-08-15 11:42:44',
+                creat: 'superAdmin',
+                state: '已发放',
+                operation: ''
+            }
+        ]
+      }
+    },
+    mounted: function () {
+    //   this.list()
+    //   http://192.168.1.32:8080/company/list
+    },
+    methods: {
+      goToAdd() {
+        this.$router.push({path: '/examAdd'})
+        // $('.el-menu-item').removeClass('is-active')
+        // $(".el-menu-item:contains('新增考卷')").addClass('is-active')
+        // this.$store.state.adminleftnavnum="新增考卷"; //设置左侧导航 is-active
+      },
+      view() {
+          this.$router.push({path: '/examMarkResult'})
+      },
+      marking() {
+          this.$router.push({path: '/examMarking'})
+      },
+      onSubmit() {
+        console.log('submit!');
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      list: function () {
+        let _this = this
+        this.axios.post('http://192.168.1.32:8080/company/list', this.form,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          _this.tableData = res.data.datas
+          _this.form = res.data.fsp
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      add: function () {
+//        alert('add')
+        this.$router.push({path: '/add'})
+      },
+      del: function (id) {
+        var that = this
+        this.axios.post(this.biz.serverUrl + '/ivvi/ivviAdDel', qs.stringify({id: id}), this.biz.urlencodedConfig).then(function (res) {
+          if (res.data.status) {
+            that.$notify.success({message: res.data.msg})
+            that.list()
+          } else {
+            that.$notify.error({message: res.data.msg})
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      edit: function (id) {
+        this.$router.push({path: '/edit?id=' + id})
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+//        console.log(size)
+      },
+      handleCurrentChange: function (currentPage) {
+        this.currentPage = currentPage
+        console.log(currentPage)
+      }
+    }
+  }
+</script>

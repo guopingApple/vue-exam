@@ -1,0 +1,237 @@
+<template>
+  <div>
+      <div class="viewExam">
+            <h1>{{ paper.name }}</h1>
+            <el-form :model="form" ref="form" label-width="80px">
+                <h6 class="mb20">
+                    <span>姓名：{{ answerResult.employeeName }}</span>
+                    <span style="padding:0 50px;">工号：{{ answerResult.employeeId }}</span>
+                    <span>考试得分：{{ form.getScoreTotal }} 分</span>
+                </h6>
+                <div v-for="(item,index) in questionList">
+                    <dl v-if="item.questionType == 1">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">单选题 {{ item.score }}分</span><el-button type="success" round class="fr">得 {{ answerDetailList[index].score }} 分</el-button></dt>
+                        <dd v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                            {{ String.fromCharCode(64 + parseInt( innerIndex + 1 )) }} . {{ item2.value }}
+                        </dd>
+                        <el-alert
+                            title="正确答案："
+                            type="success" :closable="false">{{ item.correctAnswer }}
+                        </el-alert>
+                        <el-alert
+                            title="学员答案："
+                            type="success" :closable="false">{{ answerDetailList[index].answer }}
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 2">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">多选题 {{ item.score }}分</span><el-button type="success" round class="fr">得 {{ answerDetailList[index].score }} 分</el-button></dt>
+                        <dd v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                            {{ String.fromCharCode(64 + parseInt( innerIndex + 1 )) }} . {{ item2.value }}
+                        </dd>
+                        <el-alert
+                            title="正确答案："
+                            type="success" :closable="false">{{ item.correctAnswer }}
+                        </el-alert>
+                        <el-alert
+                            title="学员答案："
+                            type="success" :closable="false">{{ answerDetailList[index].answer }}
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 3">
+                        <dt>{{ index + 1 }}.{{item.question}}
+                            <span class="pl15">单选题 {{ item.score }}分</span>
+                            <el-button type="success" round class="fr">得 {{ answerDetailList[index].score }} 分</el-button>
+                        </dt>
+                        <dd>
+                            A. 对   B.错
+                        </dd>
+                        <el-alert
+                            title="正确答案："
+                            type="success" :closable="false">{{ item.correctAnswer }}
+                        </el-alert>
+                        <el-alert
+                            title="学员答案："
+                            type="success" :closable="false">{{ answerDetailList[index].answer }}
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 4">
+                        <dt>{{ index + 1 }}.{{item.question}}
+                            <span class="pl15">填空题</span>
+                            <span  v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                                    {{ item2.score }}分
+                            </span>
+                            <el-button type="success" round class="fr">得 {{ answerDetailList[index].score }} 分</el-button>
+                        </dt>
+                        <el-alert
+                            title="正确答案："
+                            type="success" :closable="false">{{ item.correctAnswer }}
+                        </el-alert>
+                        <el-alert
+                            title="学员答案："
+                            type="success" :closable="false">{{ answerDetailList[index].answer }}
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 5">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">主观题 {{ item.score }}分</span>
+                            <em class="fr">
+                                <el-form-item
+                                    label="得"
+                                >
+                                    <el-input type="age" v-model.number="answerDetailList[index].score" auto-complete="off" style="width:120px;" @change="changeScore"></el-input>
+                                </el-form-item>
+                            </em>
+                        </dt>
+                        <el-alert
+                            title="参考答案："
+                            type="success" :closable="false">{{ item.answers }}
+                        </el-alert>
+                        <el-alert
+                            title="学员答案："
+                            type="info" :closable="false">{{ answerDetailList[index].answer }}
+                        </el-alert>
+                    </dl>
+                </div>
+                <div class="center p10"><el-button @click="submitForm('form')">提交</el-button></div>
+            </el-form>
+        </div>
+  </div>
+</template>
+<style scoped>
+    .viewExam h1{text-align: center;line-height:70px;}
+    .viewExam h6{text-align: center;}
+    .viewExam dl{padding: 15px;}
+    .viewExam dl dt{padding-bottom: 20px;}
+    .viewExam dl dd{line-height: 22px;padding-left: 20px;}
+</style>
+<script>
+let qs = require('qs')
+let axios = require('axios')
+export default {
+    data() {
+      return {
+          oid: this.$route.query.id,
+          form:{
+            //   getScore: [],
+              getScoreTotal: null
+          },
+          paper:{
+              name: '',
+          },
+          answerResult:{
+              employeeName:'',
+              employeeId:''
+          },
+          questionList:[],
+          answerDetailList:[],
+          param:{//接口传参对象
+              paperId:'',
+              employeeId:'',
+              answerDetails:[]
+          }
+        }
+    },
+    mounted: function () {
+      this.findById(this.oid)
+    },
+    methods: {
+        findById(id){
+            // console.log( id )
+            let that = this
+            this.axios.post(this.biz.serverUrl+'/exam/queryexamresult/'+ id,this.biz.urlencodedConfig )
+            .then(function (res) { 
+                if(res.status == 200){      
+                    
+                    console.log(res)
+                    that.paper = res.data.paper
+
+                    that.param.paperId = res.data.answerResult.paperId
+                    that.param.employeeId = res.data.answerResult.employeeId
+
+                    that.answerResult = res.data.answerResult
+                    that.questionList = res.data.questionList
+                    that.answerDetailList = res.data.answerDetailList
+
+                    for (let index = 0; index < that.answerDetailList.length; index++) {
+                        let element = that.answerDetailList[index]
+                        if (element.score) {
+                            that.form.getScoreTotal += parseInt( element.score )
+                        }
+                        // console.log( that.form.getScoreTotal ) 
+                    }
+                    for (var i = 0; i < that.questionList.length; i++) {
+                        var element = that.questionList[i];
+                        if (element.questionType == '4') {// 填空题
+                            let substr = "（？）"
+                            let newstr = ' ___ '
+                            if (that.isContains(element.question, substr)) {
+                                element.question = element.question.replace(/（？）/g, newstr)
+                                // console.log(element.question)
+                            }
+                        }
+                    }
+
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        // 填空题（？）
+        isContains(str, substr) {
+            return new RegExp(substr).test(str)
+        },
+        changeScore(value){
+            console.log(value)
+            this.form.getScoreTotal = 0
+            for (let index = 0; index < this.answerDetailList.length; index++) {
+                let element = this.answerDetailList[index]
+                if (element.score) {
+                    this.form.getScoreTotal += parseInt( element.score )
+                }
+                // console.log( that.form.getScoreTotal ) 
+            }
+            // this.form.getScoreTotal += parseInt( value ) 
+        },
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    // alert('submit!')
+                    this.param.answerDetails = []
+                    for (let index = 0; index < this.questionList.length; index++) {
+                        let element = this.questionList[index]
+                        if (element.questionType == 5) {
+                            this.param.answerDetails.push({
+                                id: this.answerDetailList[index].id,
+                                score:this.answerDetailList[index].score
+                            })
+                        }
+                    }
+
+                    this.param.answerDetails = JSON.stringify(this.param.answerDetails)
+
+                    // console.log(this.param.answerDetails )
+
+                    let param = qs.stringify(this.param)
+
+                    console.log( param )
+
+                    let that = this
+                    this.axios.post(this.biz.serverUrl+'/exam/readpaper',param,this.biz.urlencodedConfig )
+                    .then(function (res) { 
+                        if(res.status == 200){      
+                            // console.log(res)
+                            that.$message.success({message: '阅卷成功！'})
+                            that.$router.push({path: '/examResult'})
+                        }
+                    }).catch(function (res) {
+                        console.log(res)
+                    })
+                    
+                } else {
+                    console.log('error submit!!')
+                    return false;
+                }
+            })
+        }
+    }
+}
+</script>

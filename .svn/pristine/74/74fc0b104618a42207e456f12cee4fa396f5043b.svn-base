@@ -1,0 +1,51 @@
+<template>
+    <div class="p15">
+        <el-tabs type="border-card">
+            <el-tab-pane label="基本信息">
+                <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                    <el-form-item label="试卷名称" prop="name">
+                        <el-input v-model="ruleForm.name"></el-input>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="试卷题目">
+                bbb
+            </el-tab-pane>
+            <el-tab-pane label="试卷详情设置">
+                ccc
+            </el-tab-pane>
+        </el-tabs>
+  </div>
+</template>
+<script>
+  export default {
+    data() {
+      return {
+        ruleForm: {
+          name: ''
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ]
+        }
+      };
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            alert('submit!');
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
+    }
+  }
+</script>

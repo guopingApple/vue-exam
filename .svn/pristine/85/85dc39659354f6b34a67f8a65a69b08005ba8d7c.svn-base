@@ -1,0 +1,141 @@
+<template>
+  <div>
+      <div class="viewExam">
+            <h1>{{ paper.name }}</h1>
+            <el-form  label-width="80px">
+                <h6 class="mb20">
+                    <span>姓名：{{ answerResult.employeeName }}</span>
+                    <span style="padding:0 50px;">工号：{{ answerResult.employeeId }}</span>
+                    <span>考试分数：{{ answerResult.totalScores }} 分</span>
+                </h6>
+                <div v-for="(item,index) in questionList">
+                    <dl v-if="item.questionType == 1">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">单选题 {{ item.score }}分</span><el-button type="danger" round class="fr">得0分</el-button></dt>
+                        <dd v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                            {{ String.fromCharCode(64 + parseInt( innerIndex + 1 )) }} . {{ item2.value }}
+                        </dd>
+                        <el-alert
+                            title="正确答案：B"
+                            type="success" :closable="false">
+                        </el-alert>
+                        <el-alert
+                            title="学员答案：A"
+                            type="error" :closable="false">
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 2">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">多选题 {{ item.score }}分</span><el-button type="success" round class="fr">得15分</el-button></dt>
+                        <dd v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                            {{ String.fromCharCode(64 + parseInt( innerIndex + 1 )) }} . {{ item2.value }}
+                        </dd>
+                        <el-alert
+                            title="正确答案：A、B"
+                            type="success" :closable="false">
+                        </el-alert>
+                        <el-alert
+                            title="学员答案：A、B"
+                            type="success" :closable="false">
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 3">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">单选题 {{ item.score }}分</span><el-button type="success" round class="fr">得15分</el-button></dt>
+                        <dd>
+                            A. 对   B.错
+                        </dd>
+                        <el-alert
+                            title="正确答案：A"
+                            type="success" :closable="false">
+                        </el-alert>
+                        <el-alert
+                            title="学员答案：A"
+                            type="success" :closable="false">
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 4">
+                        <dt>{{ index + 1 }}.{{item.question}}
+                            <span class="pl15">填空题</span>
+                            <span  v-for="(item2,innerIndex) in JSON.parse(item.answers)">
+                                    {{ item2.score }}分
+                            </span>
+                            <el-button type="success" round class="fr">得15分</el-button></dt>
+                        <el-alert
+                            title="正确答案：声音、选项"
+                            type="success" :closable="false">
+                        </el-alert>
+                        <el-alert
+                            title="学员答案：声音、选项"
+                            type="success" :closable="false">
+                        </el-alert>
+                    </dl>
+                    <dl v-if="item.questionType == 5">
+                        <dt>{{ index + 1 }}.{{item.question}}<span class="pl15">主观题 {{ item.score }}分</span>
+                        <el-button type="warning" round class="fr">得15分</el-button></dt>
+                        <el-alert
+                            title=""
+                            type="success" :closable="false">
+                            一般创建一份规范的PPT，通常包括5个逻辑组成部分
+                        </el-alert>
+                        <el-alert
+                            title=""
+                            type="info" :closable="false">
+                            一般创建一份规范的PPT，通常包括5个逻辑组成部分
+                        </el-alert>
+                    </dl>
+                </div>
+                <div class="center p10"><el-button @click="close()">关闭</el-button></div>
+            </el-form>
+        </div>
+  </div>
+</template>
+<style scoped>
+    .viewExam h1{text-align: center;line-height:70px;}
+    .viewExam h6{text-align: center;}
+    .viewExam dl{padding: 15px;}
+    .viewExam dl dt{padding-bottom: 20px;}
+    .viewExam dl dd{line-height: 22px;padding-left: 20px;}
+</style>
+<script>
+    let qs = require('qs')
+    let axios = require('axios')
+export default {
+    data() {
+      return {
+          oid: this.$route.query.id,
+          paper:{
+              name: ''
+          },
+          answerResult:{
+              employeeName:'',
+              employeeId:'',
+              totalScores: ''
+          },
+          questionList:[]
+        }
+    },
+    mounted: function () {
+      this.findById(this.oid)
+    },
+    methods: {
+        findById(id){
+            console.log( id )
+            let that = this
+            this.axios.post(this.biz.serverUrl+'/exam/queryexamresult/'+ id,this.biz.urlencodedConfig )
+            .then(function (res) { 
+                if(res.status == 200){      
+                    
+                    console.log(res)
+                    that.paper = res.data.paper
+                    that.answerResult = res.data.answerResult
+                    that.questionList = res.data.questionList
+                    
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        close() {
+            this.$router.push({path: '/examResult'})
+        }
+    }
+}
+</script>

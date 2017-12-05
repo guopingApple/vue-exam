@@ -1,0 +1,260 @@
+<template>
+    <div>
+        <el-form ref="form" :model="form" inline class="pt15 pl20">
+            <el-form-item label="试卷名称" prop = "name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="创建时间">
+                <el-col :span="10">
+                <el-form-item prop="startTime">
+                    <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="10">
+                <el-form-item prop="endTime">
+                    <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+                </el-col>
+            </el-form-item>
+
+            <el-form-item label="试卷状态" prop ="status">
+                <el-select v-model="form.status" placeholder="请选择">
+                    <el-option label="未发放" value="toPublish"></el-option>
+                    <el-option label="已发放" value="published"></el-option>
+                    <el-option label="已关闭" value="closed"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="创建人" prop ="createUser">
+                <el-input v-model="form.createUser"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit">查询</el-button>
+                <el-button @click="resetForm('form')">重置</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row class="pr10">
+            <el-col :span="24" align="right">
+                <el-button type="primary" @click="goToAdd">新建试卷</el-button>
+                <el-button type="primary">导出word</el-button>
+            </el-col>
+        </el-row>
+        <div class="p10">
+            <el-table :data="tableData" style="width: 100%"
+            @selection-change="handleSelectionChange" ref="multipleTable">
+                <el-table-column
+                    type="selection"
+                    width="55">
+                </el-table-column>
+                <el-table-column
+                    prop="tableNo"
+                    label="序号"
+                    width="60"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="试卷名称"
+                    
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="score"
+                    label="总分值"
+                    width="90"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="examTime"
+                    label="考试时间"
+                    width="100"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="createTime"
+                    label="创建时间"
+                    width="160"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="createUser"
+                    label="创建人"
+                    width="110"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="status"
+                    label="状态"
+                    width="80">
+                </el-table-column>
+                <el-table-column
+                    label="操作"width="265">
+                    <template slot-scope="scope">
+                        <el-button type="primary" size="mini" @click="view(scope.row.id)">查看</el-button>
+                        <el-button type="primary" size="mini">发放</el-button>
+                        <el-button type="primary" size="mini" @click="edit(scope.row.id)">修改</el-button>
+                        <el-button type="danger" size="mini"  @click="del(scope.row.id)">删除</el-button>
+                        <!-- <el-button type="danger" size="mini"  @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!--分页-->
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-sizes="[10,15, 20, 50, 100]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="recordCount" style="margin:15px auto;text-align: center">
+            </el-pagination>
+        </div>
+    </div>
+</template>
+<style>
+ .el-form--inline .el-form-item{ margin-bottom:10px;}
+</style>
+
+<script>
+  let qs = require('qs')
+  let axios = require('axios')
+  export default {
+    data() {
+      return {
+        form: {
+          name: '',
+          startTime:'',
+          endTime:'',
+          status: '',
+          createUser: '',
+          page: ''
+        },
+        currentPage: 1,
+        pageSize: 10,
+        recordCount:0,
+        multipleSelection: [],
+        tableData:[]
+      }
+    },
+    mounted: function () {
+      this.list()
+    },
+    methods: {
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        goToAdd() {
+            this.$router.push({path: '/examAdd'})
+        },
+      
+      // 输入查询
+      onSubmit() {
+        let that = this
+        this.form.page = this.currentPage
+        console.log(this.form.page)
+        let param = qs.stringify(this.form)
+        this.axios.post(this.biz.serverUrl+'/paper/list',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        .then(function (res) { 
+            console.log(res)
+            if(res.status==200){         
+                that.tableData = res.data.datas
+                for (let index = 0; index < that.tableData.length; index++) {
+                    that.tableData[index].tableNo = index + 1 + ( (that.currentPage - 1) * that.pageSize )
+                }
+                that.recordCount = res.data.fsp.recordCount // 总数
+                that.pageSize = res.data.fsp.pageSize // 每页数量
+                that.currentPage = res.data.fsp.pageNo // 当前
+            }
+        }).catch(function (res) {
+            console.log(res)
+        })
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields()
+        this.list()
+      },
+    
+      list: function () {
+
+        let that = this
+        let param = qs.stringify({'pageNo':this.currentPage,'pageSize':this.pageSize})
+
+        this.axios.post(this.biz.serverUrl + '/paper/list',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+        .then(function (res) {
+          that.tableData = res.data.datas
+          for (let index = 0; index < that.tableData.length; index++) {
+              that.tableData[index].tableNo = index + 1 + ( (that.currentPage - 1) * that.pageSize )
+          }
+          that.recordCount = res.data.fsp.recordCount // 总数
+          that.pageSize = res.data.fsp.pageSize // 每页数量
+          that.currentPage = res.data.fsp.pageNo // 当前
+
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      del: function (id) {
+        let that = this
+          
+        this.$alert('试卷删除后无法恢复,您确认要删除？', '试卷删除', {
+          confirmButtonText: '确定',
+          callback: action => {
+              if (action == 'confirm') {
+                  // 确定删除
+                this.axios.get(this.biz.serverUrl + '/paper/delete/'+id, this.biz.urlencodedConfig).then(function (res) {
+                    if (res.data.code == 200) {
+                        that.$message.success({message: '删除成功！'})
+                        that.list()
+                    } else {
+                        that.$message.error({message: '删除失败！'})
+                    }
+                }).catch(function (res) {
+                    console.log(res)
+                })
+
+              }else if (action == 'cancel') {
+                  this.$message.error('取消删除')
+              }
+          }
+        })
+        
+      },
+      edit(id) {
+        console.log( id )
+        let that = this
+        let param = null
+        this.axios.post(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
+        .then(function (res) { 
+            if(res.status == 200){          
+                that.$router.push({path: '/examEdit?id='+id})
+            }
+        }).catch(function (res) {
+            console.log(res)
+        })
+      },
+      // 查看试卷
+      view(id) {
+        console.log( id )
+        let that = this
+        let param = null
+        this.axios.post(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
+        .then(function (res) { 
+            if(res.status == 200){          
+                that.$router.push({path: '/examView?id='+id})
+            }
+        }).catch(function (res) {
+            console.log(res)
+        })
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+//        console.log(size)
+      },
+      handleCurrentChange: function (currentPage) {
+        this.currentPage = currentPage
+        this.list()
+      }
+
+    }
+  }
+</script>

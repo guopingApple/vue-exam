@@ -1,0 +1,137 @@
+<template>
+  <div id="leftMenu">
+    <el-menu :default-openeds='["在线考试"]' default-active="2" @select="selectItems" class="el-menu-vertical-demo">
+      <div v-for="menuItem in menuList">
+        <el-submenu v-if="menuItem.link==''" :index="menuItem.name">
+          <template slot="title"><i v-bind:class="menuItem.icon"></i>{{menuItem.name}}</template>
+          <el-menu-item v-for="menuItemChild in menuItem.children" :key="menuItemChild.id" :index="menuItemChild.name">
+            <router-link :to="menuItemChild.link"><i v-bind:class="menuItemChild.icon"></i>{{menuItemChild.name}}</router-link>
+          </el-menu-item>
+        </el-submenu>
+        <el-menu-item v-else :index="menuItem.name">
+          <router-link :to="menuItem.link"><i class="iconfont icon-arrow_rf_bg"></i>{{menuItem.name}}</router-link>
+        </el-menu-item>
+      </div>
+    </el-menu>
+  </div>
+</template>
+<style>
+    @import url('//at.alicdn.com/t/font_463715_5onhn86nkpe6d2t9.css');
+    .el-menu li a{display: block}
+    .iconfont{font-size: 20px}
+    .el-menu-item.is-active{background-color:#d1dbe5;}
+    .el-menu{background-color:#e6e6e6; }
+</style>
+<script>
+export default {
+  name: "leftMenu",
+  data: function() {
+    return {
+      menuList: [
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线考试',
+          link: '',
+          children: [{
+            link: '/examList',
+            name: '试卷列表'
+          },{
+            link: '/examResult',
+            name: '考试结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线签到',
+          link: '',
+          children: [{
+            link: '/signinList',
+            name: '签到列表'
+          },{
+            link: '/signinResult',
+            name: '签到结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线报名',
+          link: '',
+          children: [{
+            link: '/enrolList',
+            name: '报名列表'
+          },{
+            link: '/enrolResult',
+            name: '报名结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线调研',
+          link: '',
+          children: [{
+            link: '/surveyList',
+            name: '调研列表'
+          },{
+            link: '/surveyResult',
+            name: '调研结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '会员管理',
+          link: '',
+          children: [{
+            link: '/companyManage',
+            name: '公司管理'
+          },{
+            link: '/supplierManage',
+            name: '供应商管理'
+          },{
+            link: '/staffManage',
+            name: '员工管理'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '系统管理',
+          link: '',
+          children: [{
+            link: '/userManage',
+            name: '用户管理'
+          },{
+            link: '/roleManage',
+            name: '角色管理'
+          },{
+            link: '/menuManage',
+            name: '菜单管理'
+          }]
+        }
+      ]
+    }
+  },
+  mounted: function() {
+    // this.initData();
+  },
+  methods: {
+    initData: function() {
+      var that = this;
+      this.axios.post(this.biz.serverUrl + "/rest/getMenuList").then(function(res) {
+          that.menuList = res.data.datas;
+          console.log(res.data.datas)
+          that.menuList.push(
+            { name: "测试", link: "/list" }
+          );
+          // console.log("1111111111");
+          // console.log(that.menuList);
+        })
+        .catch(function(res) {
+          console.log(res);
+        });
+    },
+    selectItems(index){
+      // this.$store.state.adminleftnavnum = index;
+      //按钮选中之后设置当前的index为store里的值。
+    }
+  }
+};
+</script>

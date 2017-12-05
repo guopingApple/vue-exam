@@ -1,0 +1,515 @@
+<template>
+    <div>
+        <el-form ref="form" :model="form" inline class="pt15 pl20" label-width="100px">
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+            <el-form-item label="工号" prop="code">
+                <el-input v-model="form.code"></el-input>
+            </el-form-item>
+           <el-form-item label="所在公司" prop="companyId">
+                <el-select v-model="form.companyId" placeholder="请选择">
+                    <el-option v-for="v in companys" :label="v.name" :value="v.id"></el-option>
+                    <!-- <el-option label="山西以偶定" value="beijing"></el-option> -->
+                </el-select>
+            </el-form-item>    
+            <el-form-item label="岗位名称" prop="position">
+                <el-input v-model="form.position"></el-input>
+            </el-form-item>
+            <el-form-item label="签到类型" prop="signTimeType">
+                <el-select v-model="form.signTimeType" placeholder="请选择">
+                    <el-option label="迟到" value="1"></el-option>
+                    <el-option label="正常" value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <!--  <el-form-item label="状态" prop="status">
+                <el-select v-model="form.status" placeholder="请选择">
+                    <el-option label="已签到" value="notsignin"></el-option>
+                    <el-option label="未签到" value="signined"></el-option>
+                </el-select>
+            </el-form-item> -->
+            <el-form-item label="签到时间" prop="">
+                <el-col :span="11">
+                    <el-form-item prop="trainStartDate">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.trainStartDate" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                    <!-- <el-date-picker type="dateTime" placeholder="选择日期" v-model="form.trainStartDate" style="width: 100%;"></el-date-picker> -->
+                </el-col>
+                <el-col class="line center" :span="1">-</el-col>
+                <el-col :span="11">
+                    <el-form-item prop="trainEndDate">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.trainEndDate" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                    <!-- <el-date-picker type="dateTime" placeholder="选择日期" v-model="form.trainEndDate" style="width: 100%;"></el-date-picker> -->
+                </el-col>
+            </el-form-item>
+            
+            <el-form-item>
+                <el-button type="primary" @click="onSubmit('form')">查询</el-button>
+                <el-button @click="resetForm('form')">重置</el-button>
+            </el-form-item>
+        </el-form>
+        <el-row class="pr10">
+            <el-col :span="24" align="right">
+                <!-- <el-button type="primary" size="medium" @click="chartsShow()">签到统计</el-button> -->
+                <el-button type="primary" size="medium" @click="excel()">批量导出Excel</el-button>
+            </el-col>
+        </el-row>
+        <div class="p10">
+            <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
+                <el-table-column
+                    type="selection"
+                    width="30">
+                </el-table-column>
+                <el-table-column
+                    type="index"
+                    width="50"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="签到主题"
+                    width="270"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="name"
+                    label="姓名"
+                    width="110"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="code"
+                    label="员工编码"
+                    width="180"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="company"
+                    label="所属公司"
+                    width="180"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="position"
+                    label="岗位名称"
+                    width="160"
+                    >
+                </el-table-column>                
+                <!-- <el-table-column
+                    prop="date"
+                    label="签到时间"
+                    width="190">
+                </el-table-column> -->
+                <el-table-column
+                    prop="operation"
+                    label="操作">
+                    <template slot-scope="scope">
+                        <el-button @click="handleClick(scope.row)" type="primary" size="mini">查看详情</el-button>                      
+                    </template>
+                </el-table-column>
+            </el-table>
+            <!-- 分页 -->
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :page-sizes="[10, 15]"
+                layout="total, sizes, prev, pager, next, jumper"
+                :pageCount="pageCount" style="margin:15px auto;text-align: center">
+            </el-pagination>
+        </div>
+        <div class="popUp" ref="popUp">
+            <div class="popUpcontent">
+                <el-button class='close' @click="close()">×</el-button>
+                <div class="contentbox">
+                    <h2>查看报名结果详情</h2>
+                    <ul class="content">
+                        <li>
+                            <label>姓名:</label><span>{{detail.name}}</span>
+                        </li>
+                        <li>
+                            <label>员工编号:</label><span>{{detail.code}}</span>
+                        </li>
+                        <li>
+                            <label>性别:</label><span>{{detail.gender}}</span>
+                        </li>
+                        <li>
+                            <label>民族:</label><span>{{detail.nation}}</span>
+                        </li>
+                        <li>
+                            <label>所属公司:</label><span>{{detail.company}}</span>
+                        </li>
+                        <li>
+                            <label>所属部门:</label><span>{{detail.department}}</span>
+                        </li>
+                        <li>
+                            <label>岗位名称:</label><span>{{detail.position}}</span>
+                        </li>
+                        <li>
+                            <label>岗位年限:</label><span>{{detail.postionYears}}</span>
+                        </li>
+                        <li>
+                            <label>联系方式:</label><span>{{detail.phone}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="contentbox" style="margin-top:10px;">                   
+                    <h2>签到明细</h2>
+                    <ul class="content" style="margin-top:10px;">
+                        <el-table :data="signinData" style="width: 100%">
+                            <el-table-column
+                                prop="date"
+                                label="签到日期"
+                                width="232"
+                                >
+                            </el-table-column>
+                            <el-table-column
+                                prop="type"
+                                label="签到类型"
+                                width="233"
+                                >
+                            </el-table-column>
+                            <el-table-column
+                                prop="time"
+                                label="正常签到时间"
+                                width="233"
+                                >
+                            </el-table-column>                           
+                        </el-table>
+                    </ul>
+                </div>
+                <div style="text-align:center;margin-top:10px;">
+                    <el-button type="primary" @click="close()">关闭</el-button>
+                </div>
+            </div>
+        </div>
+        <div class="deck">
+            <div class="popUpcontent">
+                <el-button class='close' @click="close()">×</el-button>
+                <div id="myCharts">
+
+                </div>
+            </div>           
+        </div>
+    </div>
+</template>    
+<style scoped>
+    .el-form--inline .el-form-item{ margin-bottom:10px;}
+    .el-input{
+        width:200px;
+    }
+    .popUp,.deck{
+        width:100%;
+        height: 100%;
+        background: rgba(0,0, 0, 0.5);
+        position: fixed;
+        left: 0;
+        top:0;
+        z-index: 2;
+        display: none;
+    }
+    
+    .popUpcontent{
+        width:700px;
+        background: #fff;
+        height: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        padding:10px;
+    }
+    .contentbox{
+        width:100%;
+    }
+    .contentbox h2{
+        font-size: 16px;
+        border-bottom: 1px solid #ececec;
+        padding-bottom: 5px;
+    }
+    .content{
+        overflow: hidden;
+    }
+    .content li{
+        width: 50%;
+        float:left;
+        box-sizing: border-box;
+        line-height: 30px;
+    }
+    .content label{
+        width: 35%;
+        float: left;
+        text-align: right;
+    }
+    .content span{
+        width: 65%;
+        float: left;
+        text-align: left;
+    }
+    .close{
+        border: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 24px;
+        background: none;
+        z-index: 999;
+    }
+    #myCharts{
+        height: 200px;
+        width:700px;
+    }
+</style>
+<script>
+import $ from 'jquery'
+import qs from 'qs'
+import axios from 'axios'
+import echarts from 'echarts'
+
+    export default {
+    data() {
+      return {
+        form: {
+          name: '',
+          code:'',
+          company:'',
+          position:'',
+        //   signTimeType:'',
+          trainStartDate:'',
+          trainEndDate: '',
+          status: ''
+        },
+        currentPage: 1,
+        pageSize: 10,
+        pageCount:0,
+        multipleSelection:[],
+        tableData:[],
+        detail:{},
+        companys:[],
+        signinData:[
+            {
+                id: '1',
+                date: '2017-08-15 11:42:44',
+                type: '迟到',
+                time: '09:00~09:90'
+            },
+            {
+                id: '2',
+                date: '2017-08-15 11:42:44',
+                type: '正常',
+                time: '13:00~13:90'
+            },
+        ]
+      }
+    },
+    mounted:function(){       
+        this.$nextTick(function () {
+            this.drawPie();
+        })
+        this.list()
+        this.companyList()
+    },
+    methods: {
+      onSubmit(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let that = this
+            let id=this.$route.query.id
+            this.form.page=this.currentPage;
+            this.form.rows=this.pageSize;
+            let param = qs.stringify(this.form)
+            console.log(param)
+            if(id!='undefined'){
+                this.form.signId=id
+            }
+            this.axios.post(this.biz.serverUrl+'signin/getSigninEmpl',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+              console.log(res)
+              if(res.data.code==200){         
+                  that.tableData=res.data.datas
+                //   that.pageSize=res.data.fsp.pageSize
+                  that.pageCount=res.data.fsp.pageCount
+                  that.currentPage=res.data.fsp.page
+                  that.tableData.forEach(function(v,i){                   
+                    let time=new Date(that.tableData[i].createTime)
+                    that.tableData[i].createTime=that.getTimer(time)
+                  })
+              }
+            }).catch(function (res) {
+              console.log(res)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+        this.list()
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+        this.list()
+      },
+      handleCurrentChange: function (currentPage) {
+        this.currentPage = currentPage
+        this.list()
+      },
+      handleClick:function(data){
+        $(".popUp").show();
+        let that=this
+        this.axios.post(this.biz.serverUrl+'signin/'+data.id+'/getSigninEmpl',{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.detail=res.data.element
+              if(that.detail.gender==1){
+                  that.detail.gender='男'
+              }else if(that.detail.gender==2){
+                  that.detail.gender='女'
+              }
+            //   that.tableData=res.data.datas
+            // //   that.pageSize=res.data.fsp.pageSize      //每页的条数
+            //   that.pageCount=res.data.fsp.pageCount      //页总数
+            //   that.currentPage=res.data.fsp.page        //当前页
+            //   that.tableData.forEach(function(v,i){                   
+            //     let time=new Date(that.tableData[i].createTime)
+            //     that.tableData[i].createTime=that.getTimer(time)
+            //   })
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+        // this.detail=data;
+      },
+      close:function(){
+          $(".popUp").hide();
+          $(".deck").hide();
+      },
+      chartsShow:function(){
+          $(".deck").show();
+      },
+      drawPie:function(){
+          var myChart=echarts.init(document.getElementById('myCharts'));
+          var option={
+               tooltip:{
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                    data:['签到人数','迟到人数']
+                },
+                color:["#B5C334","#C1232B"],
+                series: [
+                    {
+                        name:'签到统计',
+                        type:'pie',
+                        radius: ['50%', '70%'],
+                        avoidLabelOverlap: false,
+                        label: {
+                            normal: {
+                                show: false,
+                                position: 'center'
+                            },
+                            emphasis: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: '18',
+                                    fontWeight: 'bold'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                show: false
+                            }
+                        },
+                        data:[
+                            {value:105, name:'签到人数'},
+                            {value:10, name:'迟到人数'}
+                        ]
+                    }
+                ]
+          }
+          myChart.setOption(option);
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
+      companyList(){
+        let that = this
+        let pages=qs.stringify({'page':'1','rows':'1000'})
+        this.axios.post(this.biz.serverUrl+'company/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.companys=res.data.datas              
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      list(){
+        let that = this
+        let id=this.$route.query.id;
+        let pages;
+        // console.log(id)
+        if(id=='undefined'){
+            pages=qs.stringify({'page':this.currentPage,'rows':this.pageSize})
+        }else{
+            pages=qs.stringify({'page':this.currentPage,'rows':this.pageSize,'signId':id})
+        }
+        // let pages=qs.stringify({'page':this.currentPage,'rows':this.pageSize})
+        this.axios.post(this.biz.serverUrl+'signin/getSigninEmpl', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.tableData=res.data.datas
+            //   that.pageSize=res.data.fsp.pageSize      //每页的条数
+              that.pageCount=res.data.fsp.pageCount      //页总数
+              that.currentPage=res.data.fsp.page        //当前页
+              that.tableData.forEach(function(v,i){                   
+                let time=new Date(that.tableData[i].createTime)
+                that.tableData[i].createTime=that.getTimer(time)
+              })
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      excel(){
+        console.log(this.multipleSelection)
+        let id=this.$route.query.id;
+        console.log(id)
+        let that = this
+        let param = qs.stringify(this.form)       
+        if(this.multipleSelection.length==0){
+            if(id=='undefined'){
+                window.open(this.biz.serverUrl+'signin/exportSigninEmpl2Excel?name='+this.form.name+'&code='+this.form.code+'&trainStartDate='+this.form.trainStartDate+'&trainEndDate='+this.form.trainEndDate+'&company='+this.form.company+'&position='+this.form.position+'&status='+this.form.status+'&signTimeType='+this.form.signTimeType)
+            }else{
+                window.open(this.biz.serverUrl+'signin/exportSigninEmpl2Excel?name='+this.form.name+'&code='+this.form.code+'&trainStartDate='+this.form.trainStartDate+'&trainEndDate='+this.form.trainEndDate+'&company='+this.form.company+'&position='+this.form.position+'&status='+this.form.status+'&signTimeType='+this.form.signTimeType+'&signId='+id)
+            }          
+        }else{
+            let ids=''
+            this.multipleSelection.forEach(function(v,i){
+                if(i==that.multipleSelection.length-1){
+                    ids+=v.id
+                }else{
+                    ids+=v.id+','
+                }
+            })
+            console.log(ids)
+            if(id=='undefined'){
+                window.open(this.biz.serverUrl+'signin/exportSigninEmpl2Excel?ids='+ ids )
+            }else{
+                window.open(this.biz.serverUrl+'signin/exportSigninEmpl2Excel?ids='+ ids +'&signId='+id)
+            }
+            
+        }
+      }
+    }
+  }
+</script>

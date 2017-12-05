@@ -1,0 +1,545 @@
+<template>
+    <div class="p15">
+        <el-tabs v-model="activeName"  @tab-click="handleClick" type="border-card">
+            <el-tab-pane label="基本信息" name="first">
+                <el-form :model="formInfo" :rules="rulesInfo" ref="formInfo" label-width="100px" class="pt20" style="width:600px">
+                    <el-form-item label="试卷名称" prop="name">
+                        <el-input v-model="formInfo.name" placeholder="请输入试卷名称"></el-input>
+                    </el-form-item>
+                    <el-form-item label="提示信息">
+                        <el-input type="textarea" v-model="formInfo.tip" placeholder="输入本次考试要点信息"></el-input>
+                    </el-form-item>
+                    <el-form-item align="right">
+                        <el-button type="primary"  @click="nextToSecond('formInfo')">下一步</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="试卷题目" name="second">
+                <!-- 右侧固定menu -->
+                <el-menu class="el-menu-demo el-menu-fixed" mode="vertical" @select="handleSelectFixed">
+                    <el-menu-item index="1">添加单选题</el-menu-item>
+                    <el-menu-item index="2">添加多选题</el-menu-item>
+                    <el-menu-item index="3">添加判断题</el-menu-item>
+                    <el-menu-item index="4">添加填空题</el-menu-item>
+                    <el-menu-item index="5">添加简答题</el-menu-item>
+                </el-menu>
+                <el-form label-width="100px" class="pt20" style="width:880px;">
+                    <div class="Questions">
+                        <div v-for="(item,index) in QuestionArr">
+                            <!-- 单选题 -->
+                            <div class="Single pt20 relative" v-if="item.questionType == 1">
+                                <el-form :model="item" :rules="rulesQuestion" ref='formdata0'>
+                                    <el-form-item label="单选题" label-width="100px" required>
+                                        <el-col :span="12">
+                                            <el-form-item prop="question">
+                                                <el-input v-model="item.question"  placeholder="请输入单选题目..."></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2" class="ml10 mr30">
+                                            <el-form-item prop="score">
+                                                <el-input v-model="item.score" placeholder="分值"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-checkbox label="必答题"  v-model="item.isRequired"></el-checkbox>
+                                            <el-checkbox label="选项随机" v-model="item.isSort"></el-checkbox>
+                                        </el-col>
+                                    </el-form-item>
+                                    <div class="Single-answer">
+                                        <div v-for="(item2,innerIndex) in item.answers">
+                                            <el-form :model="item2" :rules="rulesQuestion" ref="">
+                                                <el-form-item label = '选项' label-width="100px" prop= "value">
+                                                    <el-input v-model="item2.value"  placeholder="请输入选项..." class="fl"></el-input>
+                                                    <el-radio-group v-model="item.radio" @change="changeHandler"><!-- 此处为父级的 item.radio -->
+                                                        <el-radio :label='item2.lable'>设为答案</el-radio>
+                                                    </el-radio-group>
+                                                    <i class="el-icon-delete gray-999 pointer" @click="removeItem(index,innerIndex)"></i>
+                                                </el-form-item>
+                                            </el-form>
+                                        </div>
+                                        <el-form-item label="" label-width="100px">
+                                            <el-button type="primary" plain @click="nextToThird('formdata0')">+添加选项</el-button>
+                                        </el-form-item>
+                                    </div>
+                                    <i class="el-icon-delete el-icon-delete-lg gray-999 pointer" @click="removeQes(index)"></i>
+                                </el-form>
+                            </div>
+                            <!-- 多选题 -->
+                            <div class="Multiple pt20 relative" v-if="item.questionType == 2">
+                                <el-form :model="item" :rules="rulesQuestion" ref="QuestionArr">
+                                    <el-form-item label="多选题" label-width="100px" required>
+                                        <el-col :span="12">
+                                            <el-form-item prop="question">
+                                                <el-input v-model="item.question"  placeholder="请输入多选题题目..."></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2" class="ml10 mr30">
+                                            <el-form-item prop="score">
+                                                <el-input v-model="item.score" placeholder="分值"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-checkbox label="必答题"  v-model="item.isRequired"></el-checkbox>
+                                            <el-checkbox label="选项随机" v-model="item.isSort"></el-checkbox>
+                                        </el-col>
+                                    </el-form-item>
+                                    <div class="Multiple-answer">
+                                        <div v-for="(item2,innerIndex) in item.answers">
+                                            <el-form :model="item2" :rules="rulesQuestion" ref="">
+                                                <el-form-item label = '选项' prop = "value" label-width="100px">
+                                                    <el-input v-model="item2.value"  placeholder="请输入选项..." class="fl"></el-input>
+                                                    <el-checkbox>设为答案</el-checkbox>
+                                                    <i class="el-icon-delete gray-999 pointer" @click="removeItem(index,innerIndex)"></i>
+                                                </el-form-item>
+                                            </el-form>
+                                        </div>
+                                        <el-form-item label="" label-width="100px">
+                                            <el-button type="primary" plain @click="addItem(index)">+添加选项</el-button>
+                                        </el-form-item>
+                                    </div>
+                                    <i class="el-icon-delete el-icon-delete-lg gray-999 pointer" @click="removeQes(index)"></i>
+                                </el-form>
+                            </div>
+                            <!-- 判断题 -->
+                            <div class="Single pt20 boolen relative" v-if="item.questionType == 3">
+                                <el-form :model="item" :rules="rulesQuestion">
+                                    <el-form-item label="判断题" label-width="100px" required>
+                                        <el-col :span="12">
+                                            <el-form-item prop="question">
+                                                <el-input v-model="item.question"  placeholder="请输入判断题题目..."></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2" class="ml10 mr30">
+                                            <el-form-item prop="score">
+                                                <el-input v-model="item.score" placeholder="分值"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-checkbox label="必答题"  v-model="item.isRequired"></el-checkbox>
+                                            <el-checkbox label="选项随机" v-model="item.isSort"></el-checkbox>
+                                        </el-col>
+                                    </el-form-item>
+                                    <div class="Single-answer">
+                                        <div v-for="(item2,innerIndex) in item.answers">
+                                            <el-form-item label = '' label-width="100px">
+                                                <el-input v-model="item2.value" class="fl" :disabled="true"></el-input>
+                                                <el-radio-group v-model="item.radio" @change="changeHandler"><!-- 此处为父级的 item.radio -->
+                                                    <el-radio :label='item2.lable'>设为答案</el-radio>
+                                                </el-radio-group>
+                                            </el-form-item>
+                                        </div>
+                                    </div>
+                                    <i class="el-icon-delete el-icon-delete-lg gray-999 pointer" @click="removeQes(index)"></i>
+                                </el-form>
+                            </div>
+                            <!-- 填空题 -->
+                            <div class="Single fill pt20 relative" v-if="item.questionType == 4">
+                                <el-form :model="item" :rules="rulesQuestion" label-width ="100px">
+                                    <el-form-item label="填空题" prop ="question">
+                                        <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 10}" v-model="item.question" placeholder="请输入填空题目..." class="fl mr10" style="width:50%;"></el-input>
+                                        <el-checkbox label="必答题" v-model="item.isRequired"></el-checkbox>
+                                    </el-form-item>
+                                    <div class="Single-answer fill-answer">
+                                        <el-form :model="item2" :rules="rulesQuestion" ref="item2" v-for="(item2,innerIndex) in item.answers">
+                                            <el-form-item label="选项" label-width="100px"  required>
+                                                <el-col :span="8">
+                                                    <el-form-item prop="value">
+                                                        <el-input v-model="item2.value" placeholder="请输入填空题答案" style="width:100%"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="4" class="ml10 mr30">
+                                                    <el-form-item prop="score">
+                                                        <el-input v-model="item2.score" placeholder="分值" style="width:100%"></el-input>
+                                                    </el-form-item>
+                                                </el-col>
+                                                <el-col :span="1">
+                                                    <i class="el-icon-delete gray-999 pointer" @click="removeItem(index,innerIndex)"></i>
+                                                </el-col>
+                                            </el-form-item>
+                                        </el-form>
+                                        <el-form-item>
+                                            <el-button type="primary" plain @click="addItem(index)">+添加选项</el-button>
+                                        </el-form-item>
+                                    </div>
+                                    <i class="el-icon-delete el-icon-delete-lg gray-999 pointer" @click="removeQes(index)"></i>
+                                </el-form>
+                            </div>
+                            <!-- 简答题 -->
+                            <div class="Single pt20 freeTopic relative" v-if="item.questionType == 5">
+                                <el-form :model="item" :rules="rulesQuestion"  label-width="100px">
+                                    <el-form-item label="简答题" required>
+                                        <el-col :span="12">
+                                            <el-form-item prop="question">
+                                                <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="item.question" placeholder="请输入主观题题目..."></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="2" class="ml10 mr30">
+                                            <el-form-item prop="score">
+                                                <el-input v-model="item.score" placeholder="分值"></el-input>
+                                            </el-form-item>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-checkbox label="必答题"  v-model="item.isRequired"></el-checkbox>
+                                        </el-col>
+                                    </el-form-item>
+                                    <el-form-item label="参考答案" prop ="answers">
+                                        <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 10}" v-model="item.answers" placeholder="请输入参考答案" class="fl" style="width:60%"></el-input>
+                                    </el-form-item>
+                                    <i class="el-icon-delete el-icon-delete-lg gray-999 pointer" @click="removeQes(index)"></i>
+                                </el-form>
+                            </div>
+                            <!-- end -->
+                        </div>
+                    </div>
+                    <el-form-item align="right" class="pt20">
+                        <el-button type="primary" @click="goToFirst">上一步</el-button>
+                        <el-button type="primary" @click="goToThird('secondFormRules')">下一步</el-button>
+                    </el-form-item>
+                    
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane label="试卷详情设置" class="paperSet" name="third">
+                <el-form :model="paperSet" :rules="rulesPaperSet" ref="paperSet" label-width="100px" style="width:600px">
+                    <el-table :data="tableData">
+                        <el-table-column
+                            prop="type"
+                            label="题型">
+                        </el-table-column>
+                        <el-table-column
+                            prop="total"
+                            label="题数">
+                        </el-table-column>
+                        <el-table-column
+                            prop="totalScore"
+                            label="总分值">
+                        </el-table-column>
+                    </el-table>
+                    <el-form-item align="right">
+                        <span>卷面总计 150 分</span> 
+                    </el-form-item>
+                    <el-form-item align="right" prop = "passScore">
+                        及格分：
+                        <el-input v-model="paperSet.passScore" style="width:80px"></el-input>
+                    </el-form-item>
+                    <el-form-item align="right" class="pt20">
+                        <el-button type="primary" @click="goToSecond2">上一步</el-button>
+                        <el-button type="primary" @click="creatPaper(formsName)">生成试卷</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+        </el-tabs>
+        
+  </div>
+</template>
+<style scoped>
+    .Single-answer .el-form-item,.Multiple-answer .el-form-item{margin-bottom: 5px;}
+    .Single-answer .el-input,.Multiple-answer .el-input{width:50%;margin-right:10px;}
+    .Single-answer .el-input__inner,.Multiple-answer .el-input__inner{height: 30px}
+    .paperSet .el-form-item{margin-bottom: 0;}
+    .el-menu-fixed{width:120px;position: absolute;top: 60px;right: 20px;text-align:center;z-index:8}
+    .el-menu-fixed .el-menu-item, .el-submenu__title{height: 35px;line-height: 35px;}
+    .el-menu-fixed{padding: 10px 0;}
+    .Questions .answers {height: 30px;}
+    .Questions{min-height: 326px;margin-top: -20px;}
+    .el-icon-delete-lg{position: absolute;font-size: 20px;top:30px;left: 5px;}
+</style>
+
+<script>
+// import $ from 'jquery'
+  export default {
+    data() {
+      return {
+        formsName:['formInfo','formSingle','formMultiple','formBoolen','formFill','formFreeTopic','paperSet'],
+        formInfo:{
+            name: '',
+            tip: ''
+        },
+        paperSet :{
+            passScore: ''
+        },
+        rulesPaperSet:{
+          passScore: [
+            { required: true, message: '请输入及格分数', trigger: 'blur' }
+          ]
+        },
+        // 试卷基本信息验证
+        rulesInfo: {
+          name: [
+            { required: true, message: '请输入试卷名称', trigger: 'blur' }
+          ]
+        },
+        // 试卷题目验证 
+        rulesQuestion: {
+          question: [
+            { required: true, message: '请输入题目名称', trigger: 'blur' }
+          ],
+          score: [
+            { required: true, message: '请输入分值', trigger: 'blur' },
+            { min: 1, max: 3, message: '长度在 1 到 3 个字符', trigger: 'blur' }
+          ],
+          value: [
+            { required: true, message: '请输入该题目选项', trigger: 'blur' },
+            { min: 1, max: 25, message: '长度在 1 到 25 个字符', trigger: 'blur' }
+          ],
+          answers: [
+            { required: true, message: '请输入参考答案', trigger: 'blur' },
+            { min: 1, max: 500, message: '长度在 1 到 500 个字符', trigger: 'blur' }
+          ]
+        },
+        QuestionArr:[
+            {
+                questionType: '1',
+                question:'',
+                score:'',
+                isRequired:false,
+                isSort:false,
+                answers:[
+                    {
+                        value:'',
+                        lable:''
+                    }
+                ],
+                radio:'100',
+                currentAnser: ''
+            }
+        ],
+        activeName:'first',
+        tableData: [{
+            type: '单选题',
+            total: '10',
+            totalScore: '20'
+            }, {
+            type: '多选题',
+            total: '10',
+            totalScore: '40'
+            }, {
+            type: '填空题',
+            total: '10',
+            totalScore: '60'
+            }, {
+            type: '判断题',
+            total: '10',
+            totalScore: '10'
+            }, {
+            type: '简答题',
+            total: '10',
+            totalScore: '20'
+        }],
+        ruleForm: {
+          name: '',
+          desc: ''
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入活动名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ]
+        }
+      };
+    },
+    methods: {
+        mounted: function () {
+            for(let i = 0,len = this.QuestionArr.length; i < len; i++) {
+                formQues.question = this.QuestionArr[i].question
+            }
+        },
+        // 删除题目
+        removeQes: function (index) {  
+            this.QuestionArr.splice(index, 1);  
+        },
+        // 删除题目选项
+        removeItem: function (index,innerIndex) {  
+            this.QuestionArr[index].answers.splice(innerIndex, 1);
+        },
+        // r
+        changeHandler(value) {
+            console.log('改变之后的值是:' + value)
+        },
+        // 增加题目选项
+        addItem: function (index) {
+            let n = 0
+            for(let i = 0,len = this.QuestionArr[index].answers.length; i < len; i++) {
+                this.QuestionArr[index].answers[i].lable = n
+                n++
+            }
+            this.QuestionArr[index].answers.push({
+                value:'',
+                lable: n
+            })
+        },
+        handleSelectFixed(key, keyPath){
+            // console.log(key, keyPath)
+            if (key == 1) {// 单选题
+                this.QuestionArr.push({
+                    questionType: '1',
+                    question:'',
+                    score:'',
+                    isRequired:false,
+                    isSort:false,
+                    answers:[
+                        {
+                            value:'',
+                            lable:''
+                        }
+                    ],
+                    radio:'100',// 默认值大于单选选项的最大数量
+                    correctAnswer: ''
+                })
+            }
+            if (key == 2) {// 多选题
+                this.QuestionArr.push({
+                    questionType: '2',
+                    question:'',
+                    score:'',
+                    isRequired:false,
+                    isSort:false,
+                    answers:[
+                        {
+                            value:''
+                        }
+                    ],
+                    correctAnswer: ''
+                })
+            }
+            if (key == 3) {// 判断题
+                this.QuestionArr.push({
+                    questionType: '3',
+                    question:'',
+                    score:'',
+                    isRequired:false,
+                    isSort:false,
+                    answers:[
+                        {
+                            value:'对',
+                            lable:'0'
+                        },
+                        {
+                            value:'错',
+                            lable:'1'
+                        }
+                    ],
+                    radio:'100',// 默认值大于单选选项的最大数量
+                    correctAnswer: ''
+                })
+            }
+            if (key == 4) {// 填空题
+                this.QuestionArr.push({
+                    questionType: '4',
+                    question:'',
+                    score:'',
+                    isRequired:false,
+                    isSort:false,
+                    answers:[
+                        {
+                            value:'',
+                            score:''
+                        }
+                    ],
+                    correctAnswer: ''
+                })
+            }
+            if (key == 5) {// 主观题
+                this.QuestionArr.push({
+                    questionType: '5',
+                    question:'',
+                    score:'',
+                    isRequired:false,
+                    answers:'',
+                    correctAnswer: ''
+                })
+            }
+        },
+        handleClick(tab, event) {
+            // console.log(tab, event);
+        },
+        goToFirst() { 
+            this.activeName = 'first'
+        },
+        nextToSecond(formName) { 
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                // 去第二步
+                this.activeName = 'second'
+                } else {
+                    this.activeName = 'first'
+                    return false;
+                }
+            })
+        },
+        nextToThird(formName) { console.log(this.$refs[formName])
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                // 去第二步
+                this.activeName = 'second'
+                } else {
+                    this.activeName = 'first'
+                    return false;
+                }
+            })
+        },
+        goToSecond2() { 
+            this.activeName = 'second'
+        },
+        creatPaper(formName) {
+            // console.log(formName)
+            
+            // formsName:['formInfo','formSingle','formMultiple','formBoolen','formFill','formFreeTopic','paperSet'],
+
+            // this.nextTick(function(){
+            //     alert('数据已经更新')
+            // });
+            // this.$nextTick(function(){
+            //     alert('v-for渲染已经完成')
+            // })
+
+            // this.$nextTick(() => {
+            //     this.$refs['QuestionArr'].validate(() => {
+            //         console.log(11111111111111111111111)
+            //         // ....
+            //     })
+            // })
+
+            // this.$refs['QuestionArr'].validate((valid) => {
+            //     if (valid) {
+            //         console.log('验证成功！');
+            //     } else {
+            //         console.log('error submit!!');
+            //     }
+            // });
+
+
+            if (formName instanceof Array && formName.length > 0) {
+
+
+                formName.forEach((obj, index) => {
+
+                    // console.log(obj )
+                    //  console.log(index )
+
+                    // this.$refs[obj].validate((valid) => {
+                    //     if (valid) {
+                    //         console.log('验证成功！');
+                    //     } else {
+                    //         console.log('error submit!!');
+                    //     }
+                    // });
+
+                });
+            }
+
+            // this.$refs[formName].validate((valid) => {
+            //     if (valid) {
+            //         alert('submit!');
+            //     } else {
+            //         console.log('error submit!!');
+            //         return false;
+            //     }
+            // });
+      },
+
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
+    }
+  }
+</script>

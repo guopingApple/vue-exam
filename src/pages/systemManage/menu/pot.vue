@@ -1,0 +1,120 @@
+<template>
+    <div style="margin-top:15px;">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" :inline-message='blone'>
+            <el-form-item label="名称" prop="name">
+                <el-input v-model="ruleForm.name" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="标识" prop="shortName">
+                <el-input v-model="ruleForm.shortName" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item label="描述" prop="description">
+                <el-input v-model="ruleForm.description" class="textInput"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
+                <el-button @click="resetForm('ruleForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
+<style scoped>
+    .el-form-item{ margin-bottom:10px;}
+    .el-input{
+        width:50%;
+    }
+</style>
+<script>
+  import $ from 'jquery' 
+  import qs from 'qs'
+  import axios from 'axios'
+  export default {
+    data() {
+      var checkCode = (rule, value, callback) => {
+        if (value === '') {
+            callback(new Error('请输入url'));
+        } else {
+            let reg=/^[A-Za-z0-9]+$/;
+              if(!reg.test(value)){
+                  callback(new Error('请输入正确的url'));
+              }
+            callback();
+        }
+      };
+      return {
+        blone:true,
+        ruleForm: {
+          shortName: '',
+          name:'',
+          description:''
+        },
+        rules: {
+          name: [
+            { required: true, message: '请输入名称', trigger: 'blur' },
+            { min: 1, max: 50, message: '请输入1-50个由英文、数字、字符或输入25汉字', trigger: 'blur' }
+          ],
+          shortName: [
+            { required: true, message: '请输入标识', trigger: 'blur' }
+          ]
+        }
+      };
+    },
+    mounted(){
+      this.detail()
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let that = this
+            this.ruleForm.id=this.$route.query.id
+            let param = qs.stringify(this.ruleForm)
+            this.axios.post(this.biz.serverUrl+'permission/save',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+              console.log(res)
+              if(res.data.code==200){             
+                that.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                });
+                that.$router.push({path: '/menuManage'});
+              }else{
+                that.$message({
+                    type: 'error',
+                    message: '添加失败!'
+                });
+              }
+              // _this.tableData = res.data.datas
+              // _this.form = res.data.fsp
+            }).catch(function (res) {
+              console.log(res)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      detail(){
+        let id=this.$route.query.id
+        let param = qs.stringify({'id':id})
+        let that=this
+        this.axios.get(this.biz.serverUrl+'resource/detail/'+id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code==200){
+            that.ruleForm.name=res.data.element.name;
+            that.ruleForm.parentId=res.data.element.parentId;
+            that.ruleForm.parentName=res.data.element.parentName;
+            that.ruleForm.url=res.data.element.url;
+            that.ruleForm.priority=res.data.element.priority;
+            that.ruleForm.remark=res.data.element.remark;
+            that.ruleForm.status=res.data.element.status;
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      }
+    }
+  }
+</script>

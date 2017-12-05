@@ -1,0 +1,420 @@
+<template>
+  <div>
+    <el-tabs type="border-card">
+        <el-tab-pane label="考生结果">
+            <el-form :model="form" ref="form" inline class="pt15">
+                <el-form-item label="姓名：" prop="employeeName">
+                    <el-input v-model="form.employeeName"></el-input>
+                </el-form-item>
+                <el-form-item label="工号：" prop="employeeId">
+                    <el-input v-model="form.employeeId"></el-input>
+                </el-form-item>
+                <el-form-item label="所属公司：" prop="company">
+                    <el-input v-model="form.company"></el-input>
+                </el-form-item>
+                <el-form-item label="分数：">
+                    <el-col :span="5">
+                    <el-form-item prop="startScores">
+                        <el-input v-model="form.startScores"></el-input>
+                    </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="5">
+                    <el-form-item prop="endScores">
+                        <el-input v-model="form.endScores"></el-input>
+                    </el-form-item>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="状态：" prop="status">
+                    <el-select v-model="form.status" placeholder="请选择">
+                        <el-option label="未考" value="0"></el-option>
+                        <el-option label="通过" value="1"></el-option>
+                        <el-option label="未通过" value="2"></el-option>
+                        <el-option label="未阅卷" value="3"></el-option>
+                    </el-select>
+                </el-form-item>
+
+                <el-form-item label="交卷时间">
+                    <el-col :span="10">
+                    <el-form-item prop="startTime">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.startTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="10">
+                    <el-form-item prop="endTime">
+                        <el-date-picker type="datetime" placeholder="选择日期" v-model="form.endTime" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                    </el-form-item>
+                    </el-col>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="onSubmit()">查询</el-button>
+                    <el-button @click="resetForm('form')">重置</el-button>
+                </el-form-item>
+            </el-form>
+
+            <el-row class="pr10">
+                <el-col :span="24" align="right">
+                    <el-button type="primary">批量导出考卷</el-button>
+                </el-col>
+            </el-row>
+            <div class="p10">
+                <el-table :data="tableData" style="width: 100%">
+                    <el-table-column
+                        type="selection"
+                        width="55">
+                    </el-table-column>
+                    <el-table-column
+                        prop="tableNo"
+                        label="序号"
+                        width="60"
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        prop="employeeName"
+                        label="姓名"
+                        width=""
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="employeeId"
+                        label="员工编号"
+                        width="90"
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="company"
+                        label="所属单位"
+                        width=""
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="totalScores"
+                        label="分数"
+                        width=""
+                        >
+                    </el-table-column>
+                    <el-table-column
+                        prop="status"
+                        label="状态"
+                        width=""
+                    >
+                    </el-table-column>
+                    <el-table-column
+                        prop="sort"
+                        label="排名"
+                        width="80">
+                    </el-table-column>
+                    <el-table-column
+                        prop="submitTime"
+                        label="交卷时间"
+                        width="">
+                    </el-table-column>
+                    <el-table-column
+                        label="操作" width="150">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="mini" @click="marking(scope.row.id)">阅卷</el-button>
+                            <el-button @click="view(scope.row.id)" type="primary" size="mini">查看</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--分页-->
+                <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    :current-page="currentPage"
+                    :page-sizes="[10,15, 20, 50, 100]"
+                    :page-size="pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="recordCount" style="margin:15px auto;text-align: center">
+                </el-pagination>
+            </div>
+        </el-tab-pane>
+        <el-tab-pane label="考试统计">
+            <el-row :gutter="20" class="examPercent">
+                <el-col :span="12">
+                    <el-card class="box-card center">
+                        <h3>50%</h3>
+                        <h6>通过率</h6>
+                        <p>
+                            <span>通过人数：50</span>
+                            <span>考试人数：100</span>
+                        </p>
+                    </el-card>
+                </el-col>
+                <el-col :span="12">
+                    <el-card class="box-card center">
+                        <h3>81.29</h3>
+                        <h6>平均分</h6>
+                        <p>
+                            <span>最高分：100.0</span>
+                            <span>最低分：0.0</span>
+                        </p>
+                    </el-card>
+                </el-col>
+            </el-row>
+        </el-tab-pane>
+        <el-tab-pane label="答题分析">
+            <div class="analysis">
+                <h3>1.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="analysis">
+                <h3>2.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="analysis">
+                <h3>3.在 PowerPoint 窗口中，用于添加幻灯片内容的主要区域是哪个区域？【单选题】5分</h3>
+                <table class="el-table">
+                    <thead class="is-group">
+                        <tr>
+                            <th>选项</th>
+                            <th>小计</th>
+                            <th>比率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>A.窗口左侧显示幻灯片缩略图的“幻灯片”选项卡</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr class="selected">
+                            <td>B.备注窗格</td>
+                            <td>36</td>
+                            <td>45%</td>
+                        </tr>
+                        <tr>
+                            <td>C.窗口中间的幻灯片窗格</td>
+                            <td>12</td>
+                            <td>20%</td>
+                        </tr>
+                        <tr>
+                            <td>D.使用“开始”选项卡中的“新建幻灯片”按钮</td>
+                            <td>56</td>
+                            <td>30%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </el-tab-pane>
+    </el-tabs>
+  </div>
+</template>
+<style scoped>
+.examPercent{line-height: 30px;}
+.examPercent .el-card{background-color:#f7f7f7;padding: 10px 0;}
+.examPercent .el-card h3{font-size: 30px;color: rgb(0, 102, 255)}
+.examPercent .el-card h6{padding: 10px 0;}
+.examPercent .el-card span{display: inline-block;margin: 0 30px;}
+.analysis h3{padding: 20px 0;}
+.analysis tr.selected{color: rgb(255, 204, 0);}
+.analysis table{border:1px solid #e6ebf5;}
+.analysis td,.analysis th{border-right:1px solid #e6ebf5;padding: 12px 10px;}
+.analysis{border:1px solid #e6ebf5;border-bottom: 0;}
+/* .el-tabs--border-card>.el-tabs__content{padding-bottom: 40px;} */
+</style>
+
+<script>
+  let qs = require('qs')
+  let axios = require('axios')
+  export default {
+    data() {
+      return {
+        form: {
+          employeeName: '',
+          employeeId:'',
+          company: '',
+          startScores: '',
+          endScores:'',
+          startTime:'',
+          endTime: '',
+          status:''
+        },
+        currentPage: 1,
+        pageSize: 10,
+        recordCount:0,
+        multipleSelection: [],
+        tableData:[]
+      }
+    },
+    mounted: function () {
+      this.list()
+    },
+    methods: {
+        // 阅卷
+        marking(id) {
+            // console.log( id )
+            let that = this
+            this.axios.post(this.biz.serverUrl+'/exam/queryexamresult/'+ id,this.biz.urlencodedConfig )
+            .then(function (res) { 
+                if(res.status == 200){          
+                    // console.log(res)
+                    // console.log(res.data.exist) 
+                    if (res.data.exist == 1) {
+                        that.$router.push({path: '/examMarking?id='+id})
+                    }
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        // 查看试卷
+        view(id) {
+            console.log( id )
+            let that = this
+
+            this.axios.post(this.biz.serverUrl+'/exam/queryexamresult/'+ id,this.biz.urlencodedConfig )
+            .then(function (res) { 
+                if(res.status == 200){          
+                    // console.log(res)
+                    // console.log(res.data.exist) 
+                    if (res.data.exist == 1) {
+                        that.$router.push({path: '/examMarkResult?id='+id})
+                    }
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        list: function () {
+            let that = this
+            let param = qs.stringify({'pageNo':this.currentPage,'pageSize':this.pageSize})
+
+            console.log(param)
+
+            this.axios.post(this.biz.serverUrl + '/exam/list',param,this.biz.urlencodedConfig)
+            .then(function (res) {
+                console.log(res)
+                if(res.status==200){         
+                    that.tableData = res.data.datas
+                    for (let index = 0; index < that.tableData.length; index++) {
+                        that.tableData[index].tableNo = index + 1 + ( (that.currentPage - 1) * that.pageSize )
+                    }
+                    that.recordCount = res.data.fsp.recordCount // 总数
+                    that.pageSize = res.data.fsp.pageSize // 每页数量
+                    that.currentPage = res.data.fsp.pageNo // 当前
+                }
+
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        // 输入查询
+        onSubmit() {
+            let that = this
+            this.form.page = this.currentPage
+            let param = qs.stringify(this.form)
+            this.axios.post(this.biz.serverUrl+'/exam/list',param,this.biz.urlencodedConfig )
+            .then(function (res) { 
+                console.log(res)
+                if(res.status==200){         
+                    that.tableData = res.data.datas
+                    for (let index = 0; index < that.tableData.length; index++) {
+                        that.tableData[index].tableNo = index + 1 + ( (that.currentPage - 1) * that.pageSize )
+                    }
+                    that.recordCount = res.data.fsp.recordCount // 总数
+                    that.pageSize = res.data.fsp.pageSize // 每页数量
+                    that.currentPage = res.data.fsp.pageNo // 当前
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
+      
+      add: function () {
+//        alert('add')
+        this.$router.push({path: '/add'})
+      },
+      del: function (id) {
+        var that = this
+        this.axios.post(this.biz.serverUrl + '/ivvi/ivviAdDel', qs.stringify({id: id}), this.biz.urlencodedConfig).then(function (res) {
+          if (res.data.status) {
+            that.$notify.success({message: res.data.msg})
+            that.list()
+          } else {
+            that.$notify.error({message: res.data.msg})
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
+      },
+      edit: function (id) {
+        this.$router.push({path: '/edit?id=' + id})
+      },
+      handleSizeChange: function (size) {
+        this.pageSize = size
+//        console.log(size)
+      },
+      handleCurrentChange: function (currentPage) {
+        // console.log(currentPage)
+        this.currentPage = currentPage
+        this.list()
+      }
+    }
+  }
+</script>

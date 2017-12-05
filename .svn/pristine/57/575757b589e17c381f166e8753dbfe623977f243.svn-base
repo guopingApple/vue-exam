@@ -1,0 +1,292 @@
+<template>
+    <div style="margin-top:15px;">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="demo-ruleForm">
+            <el-form-item label="主题名称" prop="name">
+                <el-input v-model="ruleForm.name" class="textInput"></el-input>
+            </el-form-item>
+        
+            <el-form-item label="培训时间" required>
+                <el-col :span="6">
+                <el-form-item prop="trainStartDate">
+                    <el-date-picker type="datetime" placeholder="选择日期" v-model="ruleForm.trainStartDate" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="trainEndDate">
+                    <el-date-picker type="datetime" placeholder="选择日期" v-model="ruleForm.trainEndDate" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
+                </el-form-item>
+                </el-col>
+            </el-form-item>
+            
+            <el-form-item label="封面" required>
+                <template>
+                    <el-upload
+                        class="avatar-uploader"
+                        action="http://47.93.26.6:8080/signin/upload/"
+                        :show-file-list="false"
+                        :on-success="handleAvatarSuccess"
+                        :before-upload="beforeAvatarUpload">
+                        <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </template>
+            </el-form-item>
+            <el-form-item label="签到时间类型" prop="signTimeType">
+                <el-select v-model="ruleForm.signTimeType" placeholder="请选择签到时间类型">
+                <el-option label="每天签到一次" value="1"></el-option>
+                <el-option label="每天签到两次" value="2"></el-option>
+                </el-select>
+            </el-form-item>
+            <!-- <el-form-item label="签到时刻范围" v-if="ruleForm.signTimeType==1">
+                <el-col :span="6">
+                <el-form-item prop="date3">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date3" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="date4">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date4" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="上午签到时刻范围" v-if="ruleForm.signTimeType==2">
+                <el-col :span="6">
+                <el-form-item prop="date3">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date3" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="date4">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date4" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="下午签到时刻范围" v-if="ruleForm.signTimeType==2">
+                <el-col :span="6">
+                <el-form-item prop="date5">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date5" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="date6">
+                    <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.date6" style="width: 100%;"></el-time-picker>
+                </el-form-item>
+                </el-col>
+            </el-form-item> -->
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="ruleForm.status" placeholder="请选择">
+                <el-option label="禁用" value="0"></el-option>
+                <el-option label="启用" value="1"></el-option>
+                </el-select>
+            </el-form-item>
+            <h2 class="grant">发放方式</h2>
+            <el-form-item label="二维码发放">
+                <img src="../../assets/logo.png" alt="">
+                </br>
+                <el-button type="primary" @click="downloadPic()">
+                    <a href="##" target="_self" id="tpdown">下载二维码图片</a>
+                </el-button>
+            </el-form-item>
+            <el-form-item label="指定查看二维码用户" prop="domains">
+                <template>
+                    <el-form-item 
+                        v-for="(domain, index) in ruleForm.domains"
+                        :prop="'domains.' + index + '.value'"
+                        :rules="{
+                            required: true, message: '用户不能为空', trigger: 'blur'
+                        }" style="margin-top:10px;">
+                        <el-input v-model="domain.value" class="textInput"></el-input><el-button @click.prevent="removeDomain(domain)" style="margin-left:15px;">删除</el-button>
+                    </el-form-item>                  
+                </template>    
+            
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="addDomain">新增用户</el-button>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+                <el-button @click="resetForm('ruleForm')">重置</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
+<style>
+    .el-form-item{ margin-bottom:10px;}
+    .line{
+        width: auto;
+    }
+    .textInput{
+        width:50%;
+    }
+    .avatar-uploader .el-upload {
+        border: 1px dashed #d9d9d9;
+        border-radius: 6px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+    .avatar-uploader .el-upload:hover {
+        border-color: #409EFF;
+    }
+    .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 178px;
+        height: 178px;
+        line-height: 178px;
+        text-align: center;
+    }
+    .avatar {
+        width: 178px;
+        height: 178px;
+        display: block;
+    }
+    .grant{
+        width:100%;
+        padding:0 0 10px 25px;
+        border-bottom:1px solid #ddd;
+        font-size:16px;
+    }
+</style>
+<script>
+  import $ from 'jquery' 
+  import qs from 'qs'
+  import axios from 'axios'
+  export default {
+    data() {
+      return {
+        ruleForm: {
+          name: '',
+          trainStartDate: '',
+          trainEndDate: '',
+        //   date3:'',
+        //   date4:'',
+        //   date5:'',
+        //   date6:'',
+        //   signTimeRange:'',
+        //   coverPicUrl:"",
+          signTimeType:'',
+          status:'',
+          domains: [{
+            value: ''
+          }]
+        },
+        imageUrl:'',
+        rules: {
+          name: [
+            { required: true, message: '请输入主题名称', trigger: 'blur' },
+            { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          ],
+          region: [
+            { required: true, message: '请选择签到时间类型', trigger: 'change' }
+          ],
+          date1: [
+            { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          ],
+          date2: [
+            { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+          ],
+          date3: [
+            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          ],
+          date4: [
+            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          ],
+          date5: [
+            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          ],
+          date6: [
+            { type: 'date', required: true, message: '请选择时间', trigger: 'change' }
+          ]
+        }
+      };
+    },
+    methods: {
+      submitForm(formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let that = this
+            let str=''
+            this.ruleForm.domains.forEach(function(v,i){
+                if(i==that.ruleForm.domains.length-1){
+                    str+=v.value+''
+                }else{
+                    str+=v.value+','
+                }
+                
+            })
+            this.ruleForm.qrCodeAdmin=str
+            // 设置隐藏属性，将domains设置为隐藏属性，所以stringify的时候不会设置domains
+            Object.defineProperty(this.ruleForm, "domains", { enumerable: false })
+            this.ruleForm.coverPicUrl=this.imageUrl
+            let param = qs.stringify(this.ruleForm)
+            console.log(param)
+            console.log(this.ruleForm)
+            this.axios.post(this.biz.serverUrl+'signin/add',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+              console.log(res)
+              if(res.data.code==200){             
+                that.$message({
+                    type: 'success',
+                    message: '添加成功!'
+                });
+                that.$router.push({path: '/signinList'});
+              }else{
+                that.$message({
+                    type: 'error',
+                    message: '添加失败!'
+                });
+              }
+            }).catch(function (res) {
+              console.log(res)
+            })
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      },
+      removeDomain(item) {
+        var index = this.ruleForm.domains.indexOf(item)
+        
+        if(this.ruleForm.domains.length==1){
+            return;
+        }else{
+           if (index !== -1) {
+                this.ruleForm.domains.splice(index, 1)
+            } 
+        }
+      },
+      addDomain() {
+        this.ruleForm.domains.push({
+          value: '',
+          key: Date.now()
+        });
+      },
+      handleAvatarSuccess(res, file) {
+        this.imageUrl = URL.createObjectURL(file.raw);
+      },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传头像图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传头像图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
+      downloadPic:function(){
+        //   $("#tpdown").attr("href",'http://image.zcool.com.cn/avatar/17/71/m_1265382211497.jpg');
+      }
+    }
+  }
+</script>

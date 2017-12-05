@@ -1,0 +1,133 @@
+<template>
+    <div class="p15">
+        <el-tabs type="border-card">
+            <el-tab-pane label="试卷设置">
+                <el-form :model="paperSet" :rules="rules" ref="ruleForm" class="pt20" label-width="100px" style="width:600px">
+                    <el-form-item label="答题时段" required>
+                        <el-col :span="10">
+                        <el-form-item prop="startTime">
+                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.startTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH"></el-date-picker>
+                        </el-form-item>
+                        </el-col>
+                        <el-col class="center" :span="1">-</el-col>
+                        <el-col :span="10">
+                        <el-form-item prop="endTime">
+                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.endTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH"></el-date-picker>
+                        </el-form-item>
+                        </el-col>
+                    </el-form-item>
+                    <el-form-item label="答题时长" prop="duration"  :rules="[
+                        { required: true, message: '答题时长不能为空'},
+                        { type: 'number', message: '答题时长必须为数字值'}]"
+                    >
+                        <el-input style="width:100px;" v-model.number="paperSet.duration" placeholder="分钟" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="发放方式" prop="">
+                        <img :src = "paperSet.picUrl" alt="">
+                    </el-form-item>
+                    <el-tag type="danger">提示：把二维码图片通过邮件/微信/手机QQ群发放给学员，学员扫一扫二维码或输入口令进入考试页面</el-tag>
+                    <div class="center pt20"><el-button @click="submitForm('ruleForm')">确定</el-button></div>
+                </el-form>
+            </el-tab-pane>
+        </el-tabs>
+        
+  </div>
+</template>
+<style scoped>
+    .Single-answer .el-form-item,.Multiple-answer .el-form-item{margin-bottom: 5px;}
+    .Single-answer .el-input,.Multiple-answer .el-input{width:50%;margin-right:10px;}
+    .Single-answer .el-input__inner,.Multiple-answer .el-input__inner{height: 30px}
+    .paperSet .el-form-item{margin-bottom: 0;}
+    .viewExam h1{text-align: center;line-height:70px;}
+    .viewExam h6{text-align: center;}
+    .viewExam dl{padding: 15px;}
+    .viewExam dl dt{padding-bottom: 20px;}
+    .viewExam dl dd{line-height: 22px;padding-left: 20px;}
+</style>
+
+<script>
+  let qs = require('qs')
+  let axios = require('axios')
+  export default {
+    data() {
+      return {
+        oid: this.$route.query.id,
+        paperSet:{
+            id: '',
+            startTime:'',
+            endTime: '',
+            duration:'',
+            picUrl:'',
+            status:2
+        },
+        rules: {
+          startTime: [
+            { required: true, message: '请选择答题时段', trigger: 'blur' }
+          ],
+          endTime: [
+            { required: true, message: '请选择答题时段', trigger: 'blur' }
+          ]
+        }
+      }
+    },
+    mounted: function () {
+      this.findById(this.oid)
+    },
+    methods: {
+        findById (id) {
+            let that = this
+            this.axios.post(this.biz.serverUrl + '/paper/detailtime/' + id,this.biz.urlencodedConfig)
+            .then(function (res) {
+                if(res.status == 200){          
+                    that.paperSet = res.data.paper
+                    // console.log( that.paperSet.startTime.substring(0,13) )
+
+                    that.paperSet.startTime = that.paperSet.startTime.substring(0,13)
+                    that.paperSet.endTime = that.paperSet.startTime.substring(0,13)
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
+        submitForm(formName) {
+
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            // alert('submit!');
+            let that = this
+
+            this.paperSet.startTime =this.paperSet.startTime + ':00:00'
+            this.paperSet.endTime =this.paperSet.endTime + ':00:00'
+
+            this.paperSet.status = 2
+
+            console.log(this.paperSet)
+
+            let param = qs.stringify(this.paperSet)
+
+            // console.log(param)
+            
+            this.axios.post(this.biz.serverUrl + '/paper/change/',param, this.biz.urlencodedConfig)
+            .then(function (res) {
+                if (res.data.code == 200) {
+                    that.$message.success({message: '试卷发放成功！'})
+                    that.$router.push({path: '/examList'})
+                } else {
+                    that.$message.error({message: '试卷发放失败！'})
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
+      }
+    }
+  }
+</script>
