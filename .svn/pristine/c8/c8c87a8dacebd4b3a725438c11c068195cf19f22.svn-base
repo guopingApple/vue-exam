@@ -1,16 +1,15 @@
 <template>
     <div>
-        <el-form ref="form" :model="form" :rules='rules' inline class="pt15 pl20" label-width="120px">
-            <el-form-item label="供应商名称" prop="name">
+        <el-form ref="form" :model="form" inline class="pt15 pl20" label-width="100px">
+            <el-form-item label="员工姓名" prop="name">
                 <el-input v-model="form.name"></el-input>
             </el-form-item>
-            <el-form-item label="供应商编码" prop="code">
-                <el-input v-model="form.code"></el-input>
-            </el-form-item>           
-            <el-form-item label="所属公司" prop="companyId">
+            <el-form-item label="员工编号" prop="code">
+                <el-input v-model="form.staffCode"></el-input>
+            </el-form-item>            
+            <el-form-item label="所在公司" prop="companyId">
                 <el-select v-model="form.companyId" placeholder="请选择">
                     <el-option v-for="v in companys" :label="v.name" :value="v.id"></el-option>
-                    <!-- <el-option label="山西以偶定" value="beijing"></el-option> -->
                 </el-select>
             </el-form-item>     
             <el-form-item label="状态" prop="status">
@@ -18,7 +17,7 @@
                     <el-option label="禁用" value="0"></el-option>
                     <el-option label="启用" value="1"></el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item>       
             <el-form-item>
                 <el-button type="primary" @click="onSubmit('form')">查询</el-button>
                 <el-button @click="resetForm('form')">重置</el-button>
@@ -27,7 +26,7 @@
         <el-row class="pr10">
             <el-col :span="24" align="right">
                 <el-button type="primary" size="medium" @click="addInfo()">添加+</el-button>
-                <!-- <el-button type="primary" size="medium">批量导出Excel</el-button> -->
+                <el-button type="primary" size="medium" @click='excel()'>批量导出Excel</el-button>
             </el-col>
         </el-row>
         <div class="p10">
@@ -43,36 +42,36 @@
                 </el-table-column>
                 <el-table-column
                     prop="name"
-                    label="供应商名称"
-                    width="150"
+                    label="员工姓名"
+                    width="100"
                     >
                 </el-table-column>
                 <el-table-column
                     prop="code"
-                    label="供应商编码"
+                    label="员工编号"
+                    width="100"
+                    >
+                </el-table-column>
+                <el-table-column
+                    prop="company"
+                    label="所在公司"
                     width="120"
                     >
                 </el-table-column>
                 <el-table-column
-                    prop="companyName"
-                    label="所属公司"
-                    width="100"
-                    >
+                    prop="department"
+                    label="所在部门"
+                    width="100">
+                </el-table-column>
+                <el-table-column
+                    prop="position"
+                    label="岗位"
+                    width="100">
                 </el-table-column>
                 <el-table-column
                     prop="status1"
                     label="状态"
                     width="60">
-                </el-table-column>
-                <el-table-column
-                    prop="createUser"
-                    label="录入人"
-                    width="80">
-                </el-table-column>
-                <el-table-column
-                    prop="createTime"
-                    label="录入时间"
-                    width="170">
                 </el-table-column>
                 <el-table-column
                     prop="operation"
@@ -104,34 +103,40 @@
                     <h2>基本信息</h2>
                     <ul class="content">
                         <li>
-                            <label>供应商名称:</label><span>{{detail.name}}</span>
+                            <label>员工姓名:</label><span>{{detail.name}}</span>
                         </li>
                         <li>
-                            <label>供应商编码:</label><span>{{detail.code}}</span>
+                            <label>员工编号:</label><span>{{detail.code}}</span>
                         </li>
                         <li>
-                            <label>所属公司:</label><span>{{detail.companyName}}</span>
+                            <label>电话:</label><span>{{detail.phone}}</span>
                         </li>
                         <li>
-                            <label>联系人:</label><span>{{detail.contactMan}}</span>
+                            <label>邮箱:</label><span>{{detail.email}}</span>
+                        </li>
+                        <!-- <li>
+                            <label>微信:</label><span>{{detail.openid}}</span>
                         </li>
                         <li>
-                            <label>联系人电话:</label><span>{{detail.contactPhone}}</span>
+                            <label>密码:</label><span>{{detail.password}}</span>
+                        </li> -->
+                        <li>
+                            <label>所属公司:</label><span>{{detail.company}}</span>
                         </li>
                         <li>
-                            <label>联系人邮箱:</label><span>{{detail.email}}</span>
+                            <label>所属部门:</label><span>{{detail.department}}</span>
                         </li>
                         <li>
-                            <label>录入人:</label><span>{{detail.createUser}}</span>
+                            <label>岗位名称:</label><span>{{detail.position}}</span>
                         </li>
                         <li>
-                            <label>录入时间:</label><span>{{detail.createTime}}</span>
+                            <label>岗位年限:</label><span>{{detail.postionYears}}</span>
                         </li>
                         <li>
-                            <label>最后修改人:</label><span>{{detail.updateUser}}</span>
+                            <label>性别:</label><span>{{detail.gender1}}</span>
                         </li>
                         <li>
-                            <label>最后修改时间:</label><span>{{detail.updateTime}}</span>
+                            <label>民族:</label><span>{{detail.nation}}</span>
                         </li>
                         <li>
                             <label>状态:</label><span>{{detail.status1}}</span>
@@ -173,16 +178,15 @@
     
     .popUpcontent{
         width:700px;
-        padding-bottom: 20px;
-        background: #fff;
+        background: #fff; 
         height: auto;
         position: absolute;
-        top: 100px; 
+        top: 100px;
         left: 0;
         right: 0;
         margin: 0 auto;
         padding:15px;
-        border-radius: 5px;
+        border-radius:5px; 
     }
     .contentbox{
         width:100%;
@@ -274,25 +278,13 @@
             this.form.rows=this.pageSize;
             let param = qs.stringify(this.form)
             console.log(param)
-            this.axios.post(this.biz.serverUrl+'supplier/list',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+            this.axios.post(this.biz.serverUrl+'company/list',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
               console.log(res)
               if(res.data.code==200){         
                   that.tableData=res.data.datas
                 //   that.pageSize=res.data.fsp.pageSize
                   that.pageCount=res.data.fsp.pageCount
                   that.currentPage=res.data.fsp.page
-                  that.tableData.forEach(function(v,i){                   
-                    let time=new Date(that.tableData[i].createTime)
-                    let time1=new Date(that.tableData[i].updateTime)
-                    // console.log(that.getTimer(time))
-                    that.tableData[i].createTime=that.getTimer(time)
-                    that.tableData[i].updateTime=that.getTimer(time1)
-                    if(v.status==1){
-                        v.status1='启用'
-                    }else if(v.status==0){
-                        v.status1='禁用'
-                    }
-                })
               }
             }).catch(function (res) {
               console.log(res)
@@ -316,28 +308,33 @@
         this.list()
       },
       handleClick:function(data){
-            $(".popUp").show();
-            let that=this
-            this.axios.get(this.biz.serverUrl+'supplier/getSupplierById?id='+data.id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
-            console.log(res)
-            if(res.data.code==200){
-                that.detail=res.data.element
-                if(that.detail.status==0){
-                    that.detail.status1='禁用'
-                }else if(that.detail.status==1){
-                    that.detail.status1='启用'
-                }
-                let time=new Date(that.detail.createTime)
-                let time1=new Date(that.detail.updateTime)
-                that.detail.createTime=that.getTimer(time)
-                that.detail.updateTime=that.getTimer(time1)
+         $(".popUp").show();
+         let that=this
+        this.axios.get(this.biz.serverUrl+'employee/getEmployeeById?id='+data.id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code==200){
+            that.detail=res.data.element
+            if(that.detail.status==0){
+                that.detail.status1='禁用'
+            }else if(that.detail.status==1){
+                that.detail.status1='启用'
             }
-            }).catch(function (res) {
-            console.log(res)
-            })
+            if(that.detail.gender==1){
+                that.detail.gender1='男'
+            }else if(that.detail.gender==2){
+                that.detail.gender1='女'
+            }
+            let time=new Date(that.detail.createTime)
+            let time1=new Date(that.detail.updateTime)
+            that.detail.createTime=that.getTimer(time)
+            that.detail.updateTime=that.getTimer(time1)
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
       },
       addInfo:function(){
-          this.$router.push({path: '/supplierAdd'});		
+          this.$router.push({path: '/staffAdd'});		
       },
       handleDelete:function(index,data){
         let that=this;
@@ -348,7 +345,7 @@
             center: true
         }).then(() => {
             let param=qs.stringify({'id':data.id})           
-            this.axios.post(this.biz.serverUrl+'supplier/delete',param, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+            this.axios.post(this.biz.serverUrl+'employee/delete',param, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
                 if(res.data.code==200){                    
                     that.$message({
                         type: 'success',
@@ -369,19 +366,31 @@
                 type: 'info',
                 message: '已取消删除'
             });
-        });
+        }); 
       },
       editInfo:function(id){
-          this.$router.push({path: '/supplierEdit',query:{id:id}});	
+          this.$router.push({path: '/staffEdit',query:{id:id}});	
+      },
+      companyList(){
+        let that = this
+        let pages=qs.stringify({'page':'1','rows':'1000'})
+        this.axios.post(this.biz.serverUrl+'company/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+          console.log(res)
+          if(res.data.code == 200){
+              that.companys=res.data.datas              
+          }
+        }).catch(function (res) {
+          console.log(res)
+        })
       },
       setopen:function(data,state) {
-          console.log(hot)
           let arr={};
           let that=this
-        //   arr.type=data.type;
+        //   arr.companyId=data.companyId;
         //   arr.code=data.code;
         //   arr.name=data.name;
-        //   arr.companyId=data.companyId;
+        //   arr.department=data.department;
+        //   arr.gender=data.gender;
           arr.id=data.id;
           if(state==0){
             this.$confirm('是否禁用,?', '提示', {
@@ -392,8 +401,7 @@
             }).then(() => {
                 arr.status=0;
                 let param=qs.stringify(arr)
-                console.log(param)
-                this.axios.post(this.biz.serverUrl+'supplier/update',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+                this.axios.post(this.biz.serverUrl+'staff/update',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
                     console.log(res)
                     if(res.data.code==200){             
                         that.$message({
@@ -426,7 +434,7 @@
                 arr.status=1;
                 let param=qs.stringify(arr)
                 console.log(param)
-                this.axios.post(this.biz.serverUrl+'supplier/update',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+                this.axios.post(this.biz.serverUrl+'staff/update',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
                     console.log(res)
                     if(res.data.code==200){             
                         that.$message({
@@ -457,22 +465,10 @@
       handleSelectionChange(val) {
         this.multipleSelection = val;
       },
-      companyList(){
-        let that = this
-        let pages=qs.stringify({'page':'1','rows':'1000'})
-        this.axios.post(this.biz.serverUrl+'company/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
-          console.log(res)
-          if(res.data.code == 200){
-              that.companys=res.data.datas              
-          }
-        }).catch(function (res) {
-          console.log(res)
-        })
-      },
       list(){
           let that=this
           let pages=qs.stringify({'page':this.currentPage,'rows':this.pageSize})
-            this.axios.post(this.biz.serverUrl+'supplier/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+            this.axios.post(this.biz.serverUrl+'employee/list', pages,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
             console.log(res)
             if(res.data.code == 200){
                 that.tableData=res.data.datas
@@ -480,12 +476,7 @@
                 // that.pageSize=res.data.fsp.pageSize      //每页的条数
                 that.pageCount=res.data.fsp.pageCount      //页总数
                 that.currentPage=res.data.fsp.page        //当前页
-                that.tableData.forEach(function(v,i){                   
-                    let time=new Date(that.tableData[i].createTime)
-                    let time1=new Date(that.tableData[i].updateTime)
-                    // console.log(that.getTimer(time))
-                    that.tableData[i].createTime=that.getTimer(time)
-                    that.tableData[i].updateTime=that.getTimer(time1)
+                that.tableData.forEach(function(v,i){ 
                     if(v.status==1){
                         v.status1='启用'
                     }else if(v.status==0){
@@ -499,11 +490,10 @@
       },
       excel(){
         console.log(this.multipleSelection)
-        
         let that = this
         let param = qs.stringify(this.form)       
         if(this.multipleSelection.length==0){
-            window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?name='+this.form.name+'&code='+this.form.code+'&startTime='+this.form.startTime+'&endTime='+this.form.endTime+'&company='+this.form.company+'&position='+this.form.position)
+            window.open(this.biz.serverUrl+'employee/exportToExcel?name='+this.form.name+'&code='+this.form.code+'&status='+this.form.status+'&companyId='+this.form.companyId)
         }else{
             let ids=''
             this.multipleSelection.forEach(function(v,i){
@@ -514,7 +504,7 @@
                 }
             })
             console.log(ids)
-            window.open(this.biz.serverUrl+'enrol/exportEnrolEmpl2Excel?ids='+ ids )
+            window.open(this.biz.serverUrl+'employee/exportToExcel?ids='+ ids )
 
         }
       }

@@ -97,9 +97,9 @@
     },
     methods: {
       // 子组件(login)将用户名传过来
-      userSignIn(userName,password){
-        sessionStorage.userName = userName;
-        sessionStorage.password = password;
+      userSignIn(userName,password,id){
+        sessionStorage.userName = userName
+        sessionStorage.password = password
         // console.log(this.userName) // admin
         // console.log(this.password) // 123456
       }

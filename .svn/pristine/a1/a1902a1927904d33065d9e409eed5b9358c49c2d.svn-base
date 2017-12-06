@@ -16,7 +16,7 @@
   </div>
 </template>
 <style>
-    @import url('http://at.alicdn.com/t/font_463715_5onhn86nkpe6d2t9.css');
+    @import url('//at.alicdn.com/t/font_463715_5onhn86nkpe6d2t9.css');
     .el-menu li a{display: block}
     .iconfont{font-size: 20px}
     .el-menu-item.is-active{background-color:#d1dbe5;}

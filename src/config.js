@@ -7,8 +7,9 @@ const config = {
   // serverUrl:'http://218.241.154.135:8080',
   // serverUrl:'http://192.168.1.34:8080',
   // serverUrl: 'http://192.168.1.32:8080',
-  // serverUrl: 'http://47.93.26.6:8080/',
-  serverUrl: 'http://192.168.1.57:8080/',
+  serverUrl: 'http://47.93.26.6:8080/',
+  // serverUrl: 'http://192.168.1.57:8080/',
+  // serverUrl: 'http://192.168.1.77:8088/',
   urlencodedConfig: {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
 }
 export default config

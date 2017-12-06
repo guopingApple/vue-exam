@@ -16,11 +16,11 @@
   </div>
 </template>
 <style>
-    @import url('http://at.alicdn.com/t/font_463715_5onhn86nkpe6d2t9.css');
+    @import url('//at.alicdn.com/t/font_463715_5onhn86nkpe6d2t9.css');
     .el-menu li a{display: block}
     .iconfont{font-size: 20px}
     .el-menu-item.is-active{background-color:#d1dbe5;}
-    .el-menu,.el-submenu .el-menu{background-color:#e6e6e6; }
+    .el-menu{background-color:#e6e6e6; }
 </style>
 <script>
 export default {

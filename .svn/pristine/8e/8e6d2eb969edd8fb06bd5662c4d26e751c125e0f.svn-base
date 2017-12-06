@@ -95,6 +95,7 @@
         user: {userName: ''},
         // dilog:this.$store.state.dialogFormVisible,
         ruleForm:{
+          id: sessionStorage.getItem('userId'),
           oldPassword:'',
           password:'',
           passwordRepet:''
@@ -137,8 +138,8 @@
 
             let that = this
             let param = qs.stringify({
-              'id':sessionStorage.getItem('userId'),
-              // 'id':'11c5dda4c85b11e7937200163e329876',
+              // 'id':this.ruleForm.id,
+              'id':'11c5dda4c85b11e7937200163e329876',
               'oldPassword':this.ruleForm.oldPassword,
               'password':this.ruleForm.password
             })

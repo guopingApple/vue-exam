@@ -18,15 +18,15 @@
     <el-dialog title="修改密码" :visible.sync="$store.state.dialogFormVisible">
       <el-form status-icon :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm" >
         <el-form-item label="原始密码" prop ="oldPassword">
-          <el-input type="password" v-model="ruleForm.oldPassword" placeholder="请输入6-15位原始密码" auto-complete="off" style="width:100%"></el-input>
+          <el-input v-model="ruleForm.oldPassword" placeholder="请输入6-15位原始密码" auto-complete="off" style="width:100%"></el-input>
           <!-- <span>请输入6-15位原始密码</span> -->
         </el-form-item>
         <el-form-item label="新密码" prop ="password" required>
-          <el-input type="password" v-model="ruleForm.password" placeholder="请输入新密码" auto-complete="off" style="width:100%"></el-input>
+          <el-input v-model="ruleForm.password" placeholder="请输入新密码" auto-complete="off" style="width:100%"></el-input>
           <span style="display:block">由字母、下划线、数字组成6-15位字符,至少输入一个字母是大写</span>
         </el-form-item>
         <el-form-item label="确认密码" prop ="passwordRepet" required>
-          <el-input type="password" v-model="ruleForm.passwordRepet" placeholder="确认密码" auto-complete="off" style="width:100%"></el-input>
+          <el-input v-model="ruleForm.passwordRepet" placeholder="确认密码" auto-complete="off" style="width:100%"></el-input>
           <!-- <span>（与新密码保存一致）</span> -->
         </el-form-item>
       </el-form>
@@ -95,6 +95,7 @@
         user: {userName: ''},
         // dilog:this.$store.state.dialogFormVisible,
         ruleForm:{
+          id: sessionStorage.getItem('userId'),
           oldPassword:'',
           password:'',
           passwordRepet:''
@@ -137,8 +138,8 @@
 
             let that = this
             let param = qs.stringify({
-              'id':sessionStorage.getItem('userId'),
-              // 'id':'11c5dda4c85b11e7937200163e329876',
+              // 'id':this.ruleForm.id,
+              'id':'11c5dda4c85b11e7937200163e329876',
               'oldPassword':this.ruleForm.oldPassword,
               'password':this.ruleForm.password
             })

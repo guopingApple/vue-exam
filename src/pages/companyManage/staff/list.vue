@@ -97,7 +97,7 @@
             </el-pagination>
         </div>
         <div class="popUp" ref="popUp">
-            <div class="popUpcontent">
+            <div class="popUpcontent border-box">
                 <el-button class='close' @click="close()">×</el-button>
                 <div class="contentbox">
                     <h2>基本信息</h2>
@@ -178,7 +178,6 @@
     
     .popUpcontent{
         width:700px;
-        padding-bottom: 20px;
         background: #fff; 
         height: auto;
         position: absolute;
@@ -186,7 +185,8 @@
         left: 0;
         right: 0;
         margin: 0 auto;
-        padding:10px;
+        padding:15px;
+        border-radius:5px; 
     }
     .contentbox{
         width:100%;
@@ -194,7 +194,7 @@
     .contentbox h2{
         font-size: 16px;
         border-bottom: 1px solid #ececec;
-        padding-bottom: 5px;
+        padding-bottom: 8px;
     }
     .content{
         overflow: hidden;
@@ -494,7 +494,7 @@
         let that = this
         let param = qs.stringify(this.form)       
         if(this.multipleSelection.length==0){
-            window.open(this.biz.serverUrl+'user/exportToExcel?name='+this.form.name+'&code='+this.form.code+'&status='+this.form.status+'&companyId='+this.form.companyId)
+            window.open(this.biz.serverUrl+'employee/exportToExcel?name='+this.form.name+'&code='+this.form.code+'&status='+this.form.status+'&companyId='+this.form.companyId)
         }else{
             let ids=''
             this.multipleSelection.forEach(function(v,i){
@@ -505,7 +505,7 @@
                 }
             })
             console.log(ids)
-            window.open(this.biz.serverUrl+'user/exportToExcel?ids='+ ids )
+            window.open(this.biz.serverUrl+'employee/exportToExcel?ids='+ ids )
 
         }
       }
