@@ -100,7 +100,7 @@ const router = new VueRouter({
         {path:'menuManage', alias:'/menuManage', component:require('../pages/systemManage/menu/list.vue'), meta:{title:'菜单管理',index:4}},
         {path:'menuAdd', alias:'/menuAdd', component:require('../pages/systemManage/menu/add.vue'), meta:{title:'添加菜单',index:4}},
         {path:'menuEdit', alias:'/menuEdit', component:require('../pages/systemManage/menu/edit.vue'), meta:{title:'修改菜单',index:4}},
-        // {path:'menuAddPot', alias:'/menuAddPot', component:require('../pages/systemManage/menu/pot.vue'), meta:{title:'添加权限',index:4}},
+        {path:'menuAddPot', alias:'/menuAddPot', component:require('../pages/systemManage/menu/pot.vue'), meta:{title:'添加权限',index:4}},
         {path:'roleManage', alias:'/roleManage', component:require('../pages/systemManage/role/list.vue'), meta:{title:'角色管理',index:4}},
         {path:'roleAdd', alias:'/roleAdd', component:require('../pages/systemManage/role/add.vue'), meta:{title:'添加角色',index:4}},
         {path:'roleEdit', alias:'/roleEdit', component:require('../pages/systemManage/role/edit.vue'), meta:{title:'修改角色',index:4}},
@@ -128,16 +128,16 @@ const router = new VueRouter({
 
 axios.interceptors.response.use(
   response => {
-    return response;
+    // console.log(response)
+    // return response;
   },
   error => {
+    // console.log(error.response)
     if (error.response) {
       switch (error.response.status) {
         case 401:
           // 返回 401 清除token信息并跳转到登录页面
           //store.commit(types.LOGOUT);
-
-
           router.replace({
             path: 'login',
             query: {redirect: router.currentRoute.fullPath}
@@ -148,7 +148,7 @@ axios.interceptors.response.use(
     }
      return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   });
-/*router.beforeEach((to, from, next)=>{
+router.beforeEach((to, from, next)=>{
 
   //var userJson = sessionStorage.user;
   //debugger;
@@ -158,7 +158,7 @@ axios.interceptors.response.use(
 //  }catch (e){
 //    console.log(e);
 //  }
-
+  // console.log(router.app)
   if(router.app.$store.state.user.name){
     document.title = to.meta.title
     next()
@@ -174,13 +174,13 @@ axios.interceptors.response.use(
       next()
     }
   }
-})*/
-// 路由全局钩子
-router.beforeEach((to, from, next)=>{
-  router.app.$store.commit('setPageInf',{title:to.meta.title});
-  //document.title = to.meta.title
-  next()
 })
+// 路由全局钩子
+// router.beforeEach((to, from, next)=>{
+//   router.app.$store.commit('setPageInf',{title:to.meta.title});
+//   //document.title = to.meta.title
+//   next()
+// })
 
 
 export default router;
