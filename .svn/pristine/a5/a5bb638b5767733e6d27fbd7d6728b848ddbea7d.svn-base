@@ -116,7 +116,7 @@
 </template>
 <style scoped>
  .el-form--inline .el-form-item{ margin-bottom:10px;}
- .el-message-box__message,.el-message-box__message p{text-align:center;}
+ .el-message-box__message p{text-align:center;}
  .pagination .el-select{display: inline;}
 </style>
 
@@ -361,7 +361,7 @@
         // console.log( id )
         let that = this
         let param = ''
-        this.axios.get(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
+        this.axios.post(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
         .then(function (res) { 
             if(res.status == 200){          
                 that.$router.push({path: '/examEdit?id='+id})
@@ -375,7 +375,7 @@
         console.log( id )
         let that = this
         let param = ''
-        this.axios.get(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
+        this.axios.post(this.biz.serverUrl+'/paper/detail/' + id,param,this.biz.urlencodedConfig )
         .then(function (res) { 
             if(res.status == 200){          
                 that.$router.push({path: '/examView?id='+id})

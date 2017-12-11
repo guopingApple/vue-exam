@@ -128,11 +128,11 @@ const router = new VueRouter({
 
 axios.interceptors.response.use(
   response => {
-    console.log('拦截输出,登陆未过期>>>>>>>>>>>>>>>>>>>>>>>>>>>>',response)
+    console.log(response)
     return response;
   },
   error => {
-    console.log('拦截成功,登录过期>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>',error.response)
+    console.log(error.response)
     if (error.response) {
       switch (error.response.status) {
         case 401:

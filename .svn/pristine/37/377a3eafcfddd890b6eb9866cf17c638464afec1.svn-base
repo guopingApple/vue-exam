@@ -116,7 +116,7 @@
 </template>
 <style scoped>
  .el-form--inline .el-form-item{ margin-bottom:10px;}
- .el-message-box__message,.el-message-box__message p{text-align:center;}
+ .el-message-box__message p{text-align:center;}
  .pagination .el-select{display: inline;}
 </style>
 

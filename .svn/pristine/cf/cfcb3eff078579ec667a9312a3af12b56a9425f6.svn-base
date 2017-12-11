@@ -40,7 +40,6 @@
                         :action="action"
                         :show-file-list="false"
                         :on-success="handleAvatarSuccess"
-                        :on-error='errors'
                         :before-upload="beforeAvatarUpload">
                         <img v-if="ruleForm.coverPicUrl" :src="ruleForm.coverPicUrl" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -151,7 +150,7 @@
           coverPicUrl:'',
           enrolAddress:''
         },
-        action:this.biz.serverUrl+'enrol/upload',
+        action:this.biz.serverUrl+'enrol/upload/',
         imageUrl: '',
         rules: {
           name: [
@@ -237,9 +236,6 @@
       handleAvatarSuccess(res, file) {
         this.ruleForm.coverPicUrl = res.element.coverPicUrl
         console.log(res,file)
-      },
-      errors(err,file){
-        console.log(err,file)
       },
       beforeAvatarUpload(file) {
         const isLt2M = file.size / 1024 / 1024 < 2;
