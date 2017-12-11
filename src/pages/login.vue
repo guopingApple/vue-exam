@@ -94,7 +94,7 @@
             // console.log(that.userForm.userName)
             // console.log(that.userForm.password)
           
-            this.axios.post(this.biz.serverUrl + '/rest/login', param, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+            this.axios.post(this.biz.serverUrl + 'rest/login', param, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
             .then(function(res){
               // console.log(res);
               if (res.data.code == '200') {
