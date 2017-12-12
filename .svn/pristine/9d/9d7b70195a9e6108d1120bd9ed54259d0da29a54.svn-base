@@ -36,7 +36,7 @@
         <el-row class="pr10">
             <el-col :span="24" align="right">
                 <el-button type="primary" @click="goToAdd">新建试卷</el-button>
-                <el-button type="primary" @click="exportWord">导出试卷</el-button>
+                <el-button type="primary" @click="exportWord">导出word</el-button>
             </el-col>
         </el-row>
         <div class="p10">
