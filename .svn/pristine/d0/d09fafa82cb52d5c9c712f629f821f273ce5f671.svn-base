@@ -38,87 +38,86 @@ export default {
   name: "leftMenu",
   data: function() {
     return {
-      menuList:[],
-      // menuList: [
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '在线考试',
-      //     link: '',
-      //     children: [{
-      //       link: '/examList',
-      //       name: '试卷列表'
-      //     },{
-      //       link: '/examResult',
-      //       name: '考试结果'
-      //     }]
-      //   },
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '在线签到',
-      //     link: '',
-      //     children: [{
-      //       link: '/signinList',
-      //       name: '签到列表'
-      //     },{
-      //       link: '/signinResult',
-      //       name: '签到结果'
-      //     }]
-      //   },
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '在线报名',
-      //     link: '',
-      //     children: [{
-      //       link: '/enrolList',
-      //       name: '报名列表'
-      //     },{
-      //       link: '/enrolResult',
-      //       name: '报名结果'
-      //     }]
-      //   },
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '在线调研',
-      //     link: '',
-      //     children: [{
-      //       link: '/surveyList',
-      //       name: '调研列表'
-      //     },{
-      //       link: '/surveyResult',
-      //       name: '调研结果'
-      //     }]
-      //   },
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '会员管理',
-      //     link: '',
-      //     children: [{
-      //       link: '/companyManage',
-      //       name: '公司管理'
-      //     },{
-      //       link: '/supplierManage',
-      //       name: '供应商管理'
-      //     },{
-      //       link: '/staffManage',
-      //       name: '员工管理'
-      //     }]
-      //   },
-      //   {
-      //     icon: 'iconfont icon-arrow_rf_bg',
-      //     name: '系统管理',
-      //     link: '',
-      //     children: [{
-      //       link: '/userManage',
-      //       name: '用户管理'
-      //     },{
-      //       link: '/roleManage',
-      //       name: '角色管理'
-      //     },{
-      //       link: '/menuManage',
-      //       name: '菜单管理'
-      //     }]
-      //   }
-      // ]
+      menuList: [
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线考试',
+          link: '',
+          children: [{
+            link: '/examList',
+            name: '试卷列表'
+          },{
+            link: '/examResult',
+            name: '考试结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线签到',
+          link: '',
+          children: [{
+            link: '/signinList',
+            name: '签到列表'
+          },{
+            link: '/signinResult',
+            name: '签到结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线报名',
+          link: '',
+          children: [{
+            link: '/enrolList',
+            name: '报名列表'
+          },{
+            link: '/enrolResult',
+            name: '报名结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '在线调研',
+          link: '',
+          children: [{
+            link: '/surveyList',
+            name: '调研列表'
+          },{
+            link: '/surveyResult',
+            name: '调研结果'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '会员管理',
+          link: '',
+          children: [{
+            link: '/companyManage',
+            name: '公司管理'
+          },{
+            link: '/supplierManage',
+            name: '供应商管理'
+          },{
+            link: '/staffManage',
+            name: '员工管理'
+          }]
+        },
+        {
+          icon: 'iconfont icon-arrow_rf_bg',
+          name: '系统管理',
+          link: '',
+          children: [{
+            link: '/userManage',
+            name: '用户管理'
+          },{
+            link: '/roleManage',
+            name: '角色管理'
+          },{
+            link: '/menuManage',
+            name: '菜单管理'
+          }]
+        }
+      ]
     }
   },
   mounted: function() {
