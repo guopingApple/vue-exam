@@ -21,11 +21,7 @@
                             title="正确答案："
                             type="success" :closable="false">{{ item.correctAnswer }}
                         </el-alert>
-                        <el-alert v-if = 'answerDetailList[index].score == 0'
-                            title="学员答案："
-                            type="error" :closable="false">{{ answerDetailList[index].answer }}
-                        </el-alert>
-                        <el-alert v-else
+                        <el-alert
                             title="学员答案："
                             type="success" :closable="false">{{ answerDetailList[index].answer }}
                         </el-alert>
@@ -42,11 +38,7 @@
                             title="正确答案："
                             type="success" :closable="false">{{ item.correctAnswer }}
                         </el-alert>
-                        <el-alert v-if = 'answerDetailList[index].score == 0'
-                            title="学员答案："
-                            type="error" :closable="false">{{ answerDetailList[index].answer }}
-                        </el-alert>
-                        <el-alert v-else
+                        <el-alert
                             title="学员答案："
                             type="success" :closable="false">{{ answerDetailList[index].answer }}
                         </el-alert>
@@ -63,11 +55,7 @@
                             title="正确答案："
                             type="success" :closable="false">{{ item.correctAnswer }}
                         </el-alert>
-                        <el-alert v-if = 'answerDetailList[index].score == 0'
-                            title="学员答案："
-                            type="error" :closable="false">{{ answerDetailList[index].answer }}
-                        </el-alert>
-                        <el-alert v-else
+                        <el-alert
                             title="学员答案："
                             type="success" :closable="false">{{ answerDetailList[index].answer }}
                         </el-alert>
@@ -85,11 +73,7 @@
                             title="正确答案："
                             type="success" :closable="false">{{ item.correctAnswer }}
                         </el-alert>
-                        <el-alert v-if = 'answerDetailList[index].score == 0'
-                            title="学员答案："
-                            type="error" :closable="false">{{ answerDetailList[index].answer }}
-                        </el-alert>
-                        <el-alert v-else
+                        <el-alert
                             title="学员答案："
                             type="success" :closable="false">{{ answerDetailList[index].answer }}
                         </el-alert>
@@ -103,11 +87,7 @@
                             title="参考答案："
                             type="success" :closable="false">{{ item.answers }}
                         </el-alert>
-                        <el-alert v-if = 'answerDetailList[index].score == 0'
-                            title="学员答案："
-                            type="error" :closable="false">{{ answerDetailList[index].answer }}
-                        </el-alert>
-                        <el-alert v-else
+                        <el-alert
                             title="学员答案："
                             type="success" :closable="false">{{ answerDetailList[index].answer }}
                         </el-alert>
