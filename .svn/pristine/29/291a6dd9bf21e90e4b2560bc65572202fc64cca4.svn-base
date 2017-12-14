@@ -64,12 +64,12 @@
                 <el-table :data="tableData" @selection-change="handleSelectionChange" ref="multipleTable"  style="width: 100%">
                     <el-table-column
                         type="selection"
-                        width="35">
+                        width="55">
                     </el-table-column>
                     <el-table-column
                         prop="tableNo"
-                        label="#"
-                        width="50"
+                        label="序号"
+                        width="60"
                     >
                     </el-table-column>
                     <el-table-column
@@ -481,20 +481,18 @@
                 console.log( param )
                 window.open(this.biz.serverUrl+'/exam/downexamword?'+ param)
             }else{
-                this.Word = []
                 for (let i = 0; i < this.multipleSelection.length; i++) {
                     let element = this.multipleSelection[i]
                     // console.log(element.id)
                     this.Word.push(element.id)
                 }
-                // console.log(this.Word)
+                console.log(this.Word)
                 let param = ''
-                let element = ''
                 for (let j = 0; j < this.Word.length; j++) {
-                    element = this.Word[j]
+                    let element = this.Word[j]
                     param +=',' + element
                 }
-                console.log( param.substring(1) )
+                // console.log( param.substring(1) )
                 window.open(this.biz.serverUrl+'exam/batchdownexamword?id='+ param.substring(1) )
             }
         },

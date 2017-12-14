@@ -164,7 +164,7 @@
                 //     console.log(res)
                 // })
             }else{
-                this.Word = []
+
                 for (let i = 0; i < this.multipleSelection.length; i++) {
                     let element = this.multipleSelection[i]
                     // console.log(element.id)
@@ -172,14 +172,12 @@
                 }
                 // console.log(this.Word)
                 let param = ''
-                let element = ''
-
                 for (let j = 0; j < this.Word.length; j++) {
-                    element = this.Word[j]
+                    let element = this.Word[j]
                     param +=',' + element
                 }
                 // param = qs.stringify( {'paperIds': param.substring(1)} )
-                console.log(param.substring(1))
+                // console.log(param)
 
                 window.open(this.biz.serverUrl+'paper/batchdownword?paperIds='+param.substring(1))
                 // this.axios.post(this.biz.serverUrl+'/paper/batchdownword',param,this.biz.urlencodedConfig)
