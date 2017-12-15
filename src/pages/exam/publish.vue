@@ -6,13 +6,15 @@
                     <el-form-item label="答题时段" required>
                         <el-col :span="10">
                         <el-form-item prop="startTime">
-                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.startTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH"></el-date-picker>
+                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.startTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH" :picker-options="pickerBeginDateBefore"></el-date-picker>
+                            <!-- :picker-options="pickerBeginDateBefore" -->
                         </el-form-item>
                         </el-col>
                         <el-col class="center" :span="1">-</el-col>
                         <el-col :span="10">
                         <el-form-item prop="endTime">
-                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.endTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH"></el-date-picker>
+                            <el-date-picker type="datetime" placeholder="选择日期" v-model="paperSet.endTime" style="width: 100%;" format='yyyy-MM-dd HH' value-format="yyyy-MM-dd HH" :picker-options="pickerBeginDateAfter" ></el-date-picker>
+                            <!-- :picker-options="pickerBeginDateAfter" -->
                         </el-form-item>
                         </el-col>
                     </el-form-item>
@@ -59,6 +61,16 @@
             duration:'',
             picUrl:'',
             status:2
+        },
+        pickerBeginDateBefore:{
+            disabledDate(time) {
+                return time.getTime() < Date.now() - 8.64e7
+            }
+        },
+        pickerBeginDateAfter:{
+            disabledDate: (time) => {
+                return time.getTime() < this.paperSet.startTime;
+            }
         },
         rules: {
           startTime: [

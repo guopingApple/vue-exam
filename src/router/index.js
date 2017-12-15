@@ -159,10 +159,10 @@ router.beforeEach((to, from, next)=>{
 //    console.log(e);
 //  }
   // console.log(router.app)
-  if(router.app.$store.state.user.name){
+  if(router.app.$store.state.user.name){console.log(1111)
     document.title = to.meta.title
     next()
-  }else if(sessionStorage.user){
+  }else if(sessionStorage.user){console.log('22222'+sessionStorage.user)
     document.title = to.meta.title
     next()
   }

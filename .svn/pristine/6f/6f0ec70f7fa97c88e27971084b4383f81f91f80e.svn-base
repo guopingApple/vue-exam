@@ -1,8 +1,8 @@
 <template>
-    <div >
+    <div>
         <el-tabs v-model="activeName"  @tab-click="handleClick" type="border-card">
             <el-tab-pane label="基本信息" name="first" disabled>
-                <el-form :model="paper" :rules="rulesInfo" ref="formInfo" label-width="100px" class="pt20" style="width:600px" status-icon>
+                <el-form :model="paper" :rules="rulesInfo" ref="formInfo" label-width="100px" class="pt20" style="width:600px">
                     <el-form-item label="试卷名称" prop="name">
                         <el-input v-model="paper.name" placeholder="请输入试卷名称"></el-input>
                     </el-form-item>
@@ -16,7 +16,7 @@
             </el-tab-pane>
             <el-tab-pane label="试卷题目" name="second" disabled>
                 <!-- 右侧固定menu -->
-                <el-menu class="el-menu-demo el-menu-fixed" mode="vertical" @select="handleSelectFixed" v-if="this.activeName =='second' " style = "background-color:#e6e6e6;border:0">
+                <el-menu class="el-menu-demo el-menu-fixed" mode="vertical" @select="handleSelectFixed" style = "background-color:#e6e6e6;border:0">
                     <el-menu-item index="1">添加单选题</el-menu-item>
                     <el-menu-item index="2">添加多选题</el-menu-item>
                     <el-menu-item index="3">添加判断题</el-menu-item>
@@ -28,14 +28,14 @@
                         <div v-for="(item,index) in paper.questionArr">
                             <!-- 单选题 -->
                             <div class="Single pt20 relative" v-if="item.questionType == 1">
-                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules" status-icon>
+                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules">
                                     <el-form-item label="单选题" label-width="100px" required>
                                         <el-col :span="12">
                                             <el-form-item prop="question">
                                                 <el-input v-model="item.question"  placeholder="请输入单选题目..."></el-input>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="3" class="ml10 mr30">
+                                        <el-col :span="2" class="ml10 mr30">
                                             <el-form-item prop="score">
                                                 <el-input v-model.number="item.score" placeholder="分值"></el-input>
                                             </el-form-item>
@@ -47,7 +47,7 @@
                                     </el-form-item>
                                     <div class="Single-answer">
                                         <div v-for="(item2,innerIndex) in item.answers">
-                                            <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules" status-icon>
+                                            <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules">
                                                 <el-form-item label = '选项' label-width="100px" prop= "value">
                                                     <el-input v-model="item2.value"  placeholder="请输入选项..." class="fl"></el-input>
                                                     <el-radio-group v-model="item.radio" @change="changeHandler(index,innerIndex)"><!-- 此处为父级的 item.radio -->
@@ -66,14 +66,14 @@
                             </div>
                             <!-- 多选题 -->
                             <div class="Multiple pt20 relative" v-if="item.questionType == 2">
-                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules" status-icon>
+                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules">
                                     <el-form-item label="多选题" label-width="100px" required>
                                         <el-col :span="12">
                                             <el-form-item prop="question">
                                                 <el-input v-model="item.question"  placeholder="请输入多选题题目..."></el-input>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="3" class="ml10 mr30">
+                                        <el-col :span="2" class="ml10 mr30">
                                             <el-form-item prop="score">
                                                 <el-input v-model.number="item.score" placeholder="分值"></el-input>
                                             </el-form-item>
@@ -85,7 +85,7 @@
                                     </el-form-item>
                                     <div class="Multiple-answer">
                                         <div v-for="(item2,innerIndex) in item.answers">
-                                            <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules" status-icon>
+                                            <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules">
                                                 <el-form-item label = '选项' prop = "value" label-width="100px">
                                                     <el-input v-model="item2.value"  placeholder="请输入选项..." class="fl"></el-input>
                                                     <el-checkbox v-model="item2.checkbox" @change="changeCheckBox" label="设为答案"></el-checkbox>
@@ -102,14 +102,14 @@
                             </div>
                             <!-- 判断题 -->
                             <div class="Single pt20 boolen relative" v-if="item.questionType == 3">
-                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules" status-icon>
+                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules">
                                     <el-form-item label="判断题" label-width="100px" required>
                                         <el-col :span="12">
                                             <el-form-item prop="question">
                                                 <el-input v-model="item.question"  placeholder="请输入判断题题目..."></el-input>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="3" class="ml10 mr30">
+                                        <el-col :span="2" class="ml10 mr30">
                                             <el-form-item prop="score">
                                                 <el-input v-model.number="item.score" placeholder="分值"></el-input>
                                             </el-form-item>
@@ -134,23 +134,23 @@
                             </div>
                             <!-- 填空题 -->
                             <div class="Single fill pt20 relative" v-if="item.questionType == 4">
-                                <el-form :model="item" :rules="rulesQuestion" label-width ="100px" ref="secondFormRules" status-icon>
+                                <el-form :model="item" :rules="rulesQuestion" label-width ="100px" ref="secondFormRules">
                                     <el-form-item label="填空题" prop ="questionFill">
                                         <el-input type="textarea" :autosize="{ minRows: 5, maxRows: 10}" v-model="item.questionFill" placeholder="请输入填空题目..." class="fl mr10" style="width:50%;"></el-input>
                                         <el-tag type="danger mr10" style="border:0">中文状态下（？）表示填空</el-tag>
                                         <el-checkbox label="必答题" v-model="item.isRequiredB" @change="changeisRequired"></el-checkbox>
                                     </el-form-item>
                                     <div class="Single-answer fill-answer">
-                                        <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules" status-icon v-for="(item2,innerIndex) in item.answers">
+                                        <el-form :model="item2" :rules="rulesQuestion" ref="secondFormRules" v-for="(item2,innerIndex) in item.answers">
                                             <el-form-item label="选项" label-width="100px"  required>
                                                 <el-col :span="9">
                                                     <el-form-item prop="value">
                                                         <el-input v-model="item2.value" placeholder="请输入填空题答案" style="width:100%"></el-input>
                                                     </el-form-item>
                                                 </el-col>
-                                                <el-col :span="3" class="ml10 mr10">
+                                                <el-col :span="2" class="ml10 mr10">
                                                     <el-form-item prop="score">
-                                                        <el-input v-model.number="item2.score" placeholder="分值" style="width:100%"></el-input>
+                                                        <el-input v-model="item2.score" placeholder="分值" style="width:100%"></el-input>
                                                     </el-form-item>
                                                 </el-col>
                                                 <el-col :span="1">
@@ -167,14 +167,14 @@
                             </div>
                             <!-- 简答题 -->
                             <div class="Single pt20 freeTopic relative" v-if="item.questionType == 5">
-                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules" status-icon label-width="100px">
+                                <el-form :model="item" :rules="rulesQuestion" ref="secondFormRules"  label-width="100px">
                                     <el-form-item label="简答题" required>
                                         <el-col :span="12">
                                             <el-form-item prop="question">
                                                 <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 10}" v-model="item.question" placeholder="请输入主观题题目..."></el-input>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="3" class="ml10 mr30">
+                                        <el-col :span="2" class="ml10 mr30">
                                             <el-form-item prop="score">
                                                 <el-input v-model.number="item.score" placeholder="分值"></el-input>
                                             </el-form-item>
@@ -220,11 +220,11 @@
                     </el-form-item>
                     <el-form-item align="right" prop = "passScore">
                         及格分：
-                        <el-input v-model.number="paper.passScore" style="width:80px"></el-input>
+                        <el-input v-model.number = "paper.passScore" style="width:80px"></el-input>
                     </el-form-item>
                     <el-form-item align="right" class="pt20">
                         <el-button type="primary" @click="goToSecond2">上一步</el-button>
-                        <el-button type="primary" @click="creatPaper('paperSet')">生成试卷</el-button>
+                        <el-button type="primary" @click="creatPaper('paperSet')">修改试卷</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -237,7 +237,7 @@
     .Single-answer .el-input,.Multiple-answer .el-input{width:50%;margin-right:10px;}
     .Single-answer .el-input__inner,.Multiple-answer .el-input__inner{height: 30px}
     .paperSet .el-form-item{margin-bottom: 0;}
-    .el-menu-fixed{width:120px;position: fixed;top: 180px;right: 20px;text-align:center;z-index:8}
+    .el-menu-fixed{width:120px;position: absolute;top: 60px;right: 20px;text-align:center;z-index:8}
     .el-menu-fixed .el-menu-item, .el-submenu__title{height: 35px;line-height: 35px;}
     .el-menu-fixed{padding: 10px 0;}
     .Questions .answers {height: 30px;}
@@ -284,11 +284,13 @@ export default {
             }, 1000);
         };
       return {
+        oid: this.$route.query.id,
         paper:{
-            name: '',// 名称
-            tip: '',// 简介
-            score: 0,// 总计分
-            passScore: 0,// 及格分
+            id: '',
+            name: '',
+            tip: '',
+            score: 0,
+            passScore: 0,
             sinSelection:0,// 单选题总数
             mulSelection:0,// 多选题总数
             judgement:0,// 判断题总数
@@ -305,7 +307,7 @@ export default {
         // 验证规则 试卷基本信息
         rulesInfo: {
           name: [
-            { required: true, message: '请输入试卷名称', trigger: 'blur' },
+            { required: true, message: '请输入试卷名称', trigger: 'blur' }
             { min: 1, max: 25, message: '长度在 1 到 25 个字符', trigger: 'blur' }
           ]
         },
@@ -353,7 +355,31 @@ export default {
         }]
       };
     },
+    mounted: function () {
+      this.findById(this.oid)
+    },
     methods: {
+        findById (id) {
+            let that = this
+            this.axios.get(this.biz.serverUrl + 'paper/detail/' + id,this.biz.urlencodedConfig)
+            .then(function (res) {
+                if(res.status == 200){          
+                    that.paper.id = res.data.paper.id
+                    that.paper.name = res.data.paper.name
+                    that.paper.tip = res.data.paper.tip
+                    that.paper.score = res.data.paper.score
+                    that.paper.passScore = res.data.paper.passScore
+                    that.paper.questionArr = res.data.questionList
+                    // answers 
+                    for (let index = 0; index < that.paper.questionArr.length; index++) {
+                        let element = that.paper.questionArr[index];
+                        element.answers = JSON.parse (element.answers)
+                    }
+                }
+            }).catch(function (res) {
+                console.log(res)
+            })
+        },
         // 是否必答
         changeisRequired: function(value){
             console.log(value)   // true/false
@@ -386,7 +412,7 @@ export default {
             console.log(value) // true/false
         },
         // 增加题目选项
-        addItem: function (index) {
+        addItem: function (index) { console.log(index)
             let n = 0
             for(let i = 0,len = this.paper.questionArr[index].answers.length; i < len; i++) {
                 this.paper.questionArr[index].answers[i].lable = n
@@ -394,13 +420,13 @@ export default {
             }
             this.paper.questionArr[index].answers.push({
                 value:'',
-                lable: n
+                lable: ''+ n +''
             })
             this.paper.questionArr[index].radio = '100' // 默认值大于单选选项的最大数量 不让默认选中
             // console.log(n+1)
         },
         handleSelectFixed(key, keyPath){
-            // console.log(key, keyPath)
+            console.log(key)
             if (key == 1) {// 单选题
                 this.paper.questionArr.push({
                     questionType: '1',
@@ -439,23 +465,19 @@ export default {
                     answers:[
                         {
                             value:'',
-                            checkbox:false,
-                            lable:'0'
+                            checkbox:false
                         },
                         {
                             value:'',
-                            checkbox:false,
-                            lable:'1'
+                            checkbox:false
                         },
                         {
                             value:'',
-                            checkbox:false,
-                            lable:'2'
+                            checkbox:false
                         },
                         {
                             value:'',
-                            checkbox:false,
-                            lable:'3'
+                            checkbox:false
                         }
                     ]
                 })
@@ -590,7 +612,6 @@ export default {
                     }
                 }
             }
-            // 第三步
 	        if(!pass){
 	            return false;
 	        }else{
@@ -623,18 +644,14 @@ export default {
                         this.tableData[4].totalScore += parseInt(element.score) 
                     }
                 }
+
                 // 总题数
                 this.paper.sinSelection = this.tableData[0].total
                 this.paper.mulSelection = this.tableData[1].total
                 this.paper.judgement = this.tableData[2].total
                 this.paper.blankFill = this.tableData[3].total
                 this.paper.shorDiscuss = this.tableData[4].total
-
-                // console.log(this.paper.sinSelection)
-                // console.log(this.paper.mulSelection)
-                // console.log(this.paper.judgement)
-                // console.log(this.paper.blankFill)
-                // console.log(this.paper.shorDiscuss)
+                
 
                 // 总分数
                 for (let i = 0; i < this.tableData.length; i++) {
@@ -645,9 +662,11 @@ export default {
                     var element = this.paper.questionArr[index]
                     element.qnumber = index + 1
                 }
+
                 // 转成JSON
                 this.paper.questionArr = JSON.stringify(this.paper.questionArr)
                 // console.log(this.paper.questionArr)
+                
 	        }
         },
         // 填空题（？）
@@ -670,7 +689,7 @@ export default {
             }
             return count;
         },
-        // 创建试卷
+        // 修改试卷
         creatPaper(formName) {
             this.$refs[formName].validate((valid) => {
 
@@ -678,14 +697,14 @@ export default {
                     let that = this
                     let paper = qs.stringify(this.paper)
 
-                    this.axios.post(this.biz.serverUrl + 'paper/save',paper,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+                    this.axios.post(this.biz.serverUrl + 'paper/update',paper,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                     .then(function(res){
                         console.log(res);
                         if (res.data.code == 200) {
-                            that.$message.success({message: '创建试卷成功！'})
+                            that.$message.success({message: '修改试卷成功！'})
                             that.$router.push({path: '/examList'})
                         } else {
-                            that.$message.error('创建试卷失败！')
+                            that.$message.error('修改试卷失败！')
                             return
                         }
                     }).catch(function (res) {
