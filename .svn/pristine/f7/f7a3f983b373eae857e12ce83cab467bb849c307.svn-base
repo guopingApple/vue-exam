@@ -10,7 +10,7 @@
                     <el-form-item prop="name" v-if='ruleForm.isEnrol==0' 
                     :rules="[
                         { required: true, message: '请输入主题名称'},
-                        { min: 6, max: 30, message: '长度在 6 到 30 个字符,由字母、数字、汉字组成' },
+                        { min: 6, max: 30, message: '长度在 6 到 30 个字符,由字母、数字、汉字组成' }
                     ]">
                         <el-input v-model="ruleForm.name" class="textInput"></el-input>
                     </el-form-item>
@@ -43,7 +43,7 @@
                         <el-date-picker type="datetime" placeholder="选择日期" v-model="ruleForm.trainEndDate" style="width: 100%;" format='yyyy-MM-dd HH:mm:ss' value-format="yyyy-MM-dd HH:mm:ss"></el-date-picker>
                     </el-form-item>
                 </el-col>
-            </el-form-item>
+            </el-form-item>            
             <el-form-item label="封面" required prop="coverPicUrl" v-if='ruleForm.isEnrol==1'>
                 <template>
                     <el-upload
@@ -76,109 +76,99 @@
                 <el-option label="每天签到两次" value="2"></el-option>
                 </el-select>
             </el-form-item>
-            <div v-if="ruleForm.signTimeType==1">
-                <el-form-item label="签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="amStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amStartTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="amEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amEndTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
+            <el-form-item label="签到时刻范围" required v-if="ruleForm.signTimeType==1">
+                <el-col :span="6">
+                <el-form-item prop="amStartTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.amStartTime"
+                        :picker-options="{
+                        start: '00:00',
+                        step: '00:15',
+                        end: '23:59'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
                 </el-form-item>
-            </div>
-            <div v-if="ruleForm.signTimeType==2">
-                <el-form-item label="上午签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="amStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amStartTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '12:00'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="amEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amEndTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '12:00'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="amEndTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.amEndTime"
+                        :picker-options="{
+                        start: '00:00',
+                        step: '00:15',
+                        end: '23:59'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
                 </el-form-item>
-                <el-form-item label="下午签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="pmStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.pmStartTime"
-                                :picker-options="{
-                                start: '12:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="pmEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.pmEndTime"
-                                :picker-options="{
-                                start: '12:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="上午签到时刻范围" required v-if="ruleForm.signTimeType==2">
+                <el-col :span="6">
+                <el-form-item prop="amStartTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.amStartTime"
+                        :picker-options="{
+                        start: '00:00',
+                        step: '00:15',
+                        end: '12:00'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
                 </el-form-item>
-            </div>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="amEndTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.amEndTime"
+                        :picker-options="{
+                        start: '00:00',
+                        step: '00:15',
+                        end: '12:00'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                </el-form-item>
+                </el-col>
+            </el-form-item>
+            <el-form-item label="下午签到时刻范围" required v-if="ruleForm.signTimeType==2">
+                <el-col :span="6">
+                <el-form-item prop="pmStartTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.pmStartTime"
+                        :picker-options="{
+                        start: '12:00',
+                        step: '00:15',
+                        end: '23:59'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                </el-form-item>
+                </el-col>
+                <el-col class="line" :span="1">-</el-col>
+                <el-col :span="6">
+                <el-form-item prop="pmEndTime">
+                    <el-time-select
+                        placeholder="起始时间"
+                        v-model="ruleForm.pmEndTime"
+                        :picker-options="{
+                        start: '12:00',
+                        step: '00:15',
+                        end: '23:59'
+                        }">
+                    </el-time-select>
+                    <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                </el-form-item>
+                </el-col>
+            </el-form-item>
             <!-- <el-form-item label="状态" prop="status">
                 <el-select v-model="ruleForm.status" placeholder="请选择">
                 <el-option label="禁用" value="0"></el-option>
@@ -193,7 +183,7 @@
                     <a href="##" target="_self" id="tpdown">下载二维码图片</a>
                 </el-button>
             </el-form-item> -->
-            <el-form-item label="指定查看二维码员工编号" required prop="domains">
+            <el-form-item label="指定查看二维码员工编号" required prop="domains" label-width="190px">
                 <template>
                     <el-form-item 
                         v-for="(domain, index) in ruleForm.domains"
@@ -202,26 +192,30 @@
                         :rules='rules1' class='addcode'>
                         <el-input v-model="domain.value" class="textInput"></el-input><el-button @click.prevent="removeDomain(domain)" style="margin-left:15px;">删除</el-button>
                     </el-form-item>                  
-                </template>    
-            
+                </template>                
             </el-form-item>
-            <!-- <el-form-item label-width="190px">
+            <el-form-item  label-width="190px">
                 <el-button @click="addDomain">新增用户</el-button>
-            </el-form-item> -->
-            <el-form-item label-width="190px">
-                <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
+            </el-form-item>
+            <el-form-item  label-width="190px">
+                <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
                 <el-button @click="goback()">返回</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 <style scoped>
+    .el-col-21{overflow-x: hidden}
     /* .el-form-item{ margin-bottom:10px;} */
+    .el-select{width:50%;}
     .line{
         width: auto;
     }
     .textInput{
         width:50%;
+    }
+    .addcode{
+        /* margin-top:20px; */
     }
     .avatar-uploader .el-upload {
         border: 1px dashed #d9d9d9;
@@ -252,20 +246,15 @@
         border-bottom:1px solid #ddd;
         font-size:16px;
     }
-    .addcode{
-        /* margin-top:20px; */
-    }
-    .el-date-editor.el-input{
-        width:100%;
-    }
 </style>
 <script>
   import $ from 'jquery' 
-  import qs from 'qs' 
-  import axios from 'axios' 
+  import qs from 'qs'
+  import axios from 'axios'
+  var arrs=[]
   export default {
     data() {
-       var checkCode = (rule, value, callback) => {      
+       var checkCode = (rule, value, callback) => {        
         if (value === '') {
             callback(new Error('请输入员工编号'));
         } else {
@@ -273,25 +262,18 @@
               if(!reg.test(value)){
                   callback(new Error('请输入正确的员工编号'));
               }
-            //   if(arrs.length!=0){
-            //       let str=arrs.join(",")+','
-            //     //   s.replace(ary[i]+",","").indexOf(ary[i]+",")>-1
-            //       for(var i=0;i<arrs.length;i++){
-            //           console.log(str.replace(arrs[arrs.length-1]+',','').indexOf(arrs[i]+','))
-            //         if(str.replace(arrs[arrs.length-1]+',','').indexOf(arrs[i]+',')>-1){
-            //             callback(new Error('该员工已存在'));
-            //         }  
-            //         callback();
-            //       } 
-            //       callback();                
-            //   }
             callback();
         }
       };
       var checkName=(rule, value, callback) => {
-          let reg=/^[\w\u3E00-\u9FA5]+$/;
-          if(!reg.test(value)){
-            callback(new Error('请输入正确的主题名称'));
+          if (value === '') {
+              callback(new Error('请输入主题名称'));
+          }else{        
+            let reg=/^[\w\u3E00-\u9FA5]+$/;
+            if(!reg.test(value)){
+              callback(new Error('请输入正确的主题名称'));
+            }
+            callback();
           }
       }
       return {
@@ -312,9 +294,9 @@
           }],
           isEnrol:1
         },
-        kong:'aaaaa',
-        action:this.biz.serverUrl+'signin/upload/',
-        imageUrl:'',
+        action:this.biz.serverUrl+'signin/upload',
+        readonly:true,
+        imageUrl:'',        
         rules: {
         //   name: [
         //     { required: true, message: '请输入主题名称'},
@@ -322,43 +304,41 @@
         //     { validator: checkName }
         //   ],
           trainStartDate: [
-            { required: true, message: '请选择培训开始时间',trigger:'blur'}
+            { required: true, message: '请选择培训开始时间'}
           ],
           trainEndDate: [
-            { required: true, message: '请选择培训结束时间' ,trigger:'blur'}
+            { required: true, message: '请选择培训结束时间' }
           ],
-        //   status: [
-        //     { required: true, message: '请选择状态',trigger:'change'}
-        //   ],
+          status: [
+            { required: true, message: '请选择状态',trigger:'change'}
+          ],
           signTimeType: [
             { required: true, message: '请选择签到时间类型',trigger:'change'}
           ],
           coverPicUrl:[
-              { required: true, message: '请添加封面',trigger:'change'}
+              { required: true, message: '请添加封面'}
           ],
           amStartTime:[
-              { required: true, message: '请选择上午签到开始时间',trigger:'blur'}
+              { required: true, message: '请选择上午签到开始时间'}
           ],
           amEndTime:[
-              { required: true, message: '请选择上午签到结束时间',trigger:'blur'}
+              { required: true, message: '请选择上午签到结束时间'}
           ],
           pmStartTime:[
-              { required: true, message: '请选择下午签到开始时间',trigger:'blur'}
+              { required: true, message: '请选择下午签到开始时间'}
           ],
           pmEndTime:[
-              { required: true, message: '请选择下午签到结束时间',trigger:'blur'}
+              { required: true, message: '请选择下午签到结束时间'}
           ]
         },
         rules1: [
           { required: true, validator: checkCode }
         ],
-        trainList:[],
-        readonly:true,
+        trainList:[]
       };
     },
     mounted(){
-        this.detail()
-        // this.train()
+        this.train()
     },
     methods: {
       submitForm(formName) {
@@ -371,26 +351,27 @@
                     str+=v.value+''
                 }else{
                     str+=v.value+','
-                }               
+                }                
             })
             this.ruleForm.qrCodeAdmin=str
             // 设置隐藏属性，将domains设置为隐藏属性，所以stringify的时候不会设置domains
             Object.defineProperty(this.ruleForm, "domains", { enumerable: false })
-            this.ruleForm.id=this.$route.query.id
             // this.ruleForm.coverPicUrl=this.imageUrl
             let param = qs.stringify(this.ruleForm)
-            this.axios.post(this.biz.serverUrl+'signin/update',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
+            console.log(param)
+            console.log(this.ruleForm)
+            this.axios.post(this.biz.serverUrl+'signin/add',param,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
               console.log(res)
               if(res.data.code==200){             
                 that.$message({
                     type: 'success',
-                    message: '修改成功!'
+                    message: '添加成功!'
                 });
                 that.$router.push({path: '/signinList'});
               }else{
                 that.$message({
                     type: 'error',
-                    message: '修改失败!'
+                    message: '添加失败!'
                 });
               }
             }).catch(function (res) {
@@ -424,6 +405,18 @@
           value: '',
           key: Date.now()
         });
+        arrs=this.ruleForm.domains
+      },
+      deleName(){
+          if(this.ruleForm.isEnrol==1){
+              this.readonly=true
+          }else if(this.ruleForm.isEnrol==0){
+              this.readonly=false
+          }
+          this.ruleForm.name=''
+          this.ruleForm.trainStartDate=''
+          this.ruleForm.trainEndDate=''
+          this.ruleForm.coverPicUrl=''
       },
       handleAvatarSuccess(res, file) {
         this.ruleForm.coverPicUrl = res.element.coverPicUrl
@@ -433,49 +426,19 @@
         console.log(res,file)
       },
       beforeAvatarUpload(file) {
+        // const isJPG = file.type === 'image/jpeg';
+        // const isPNG = file.type === 'image/png';
+        // console.log(file)
         const isLt2M = file.size / 1024 / 1024 < 2;
+
+        // if (!isJPG && !isPNG) {
+        //   this.$message.error('上传头像图片只能是 JPG/PNG 格式!');
+        // }
         if (!isLt2M) {
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
+        // return isJPG && isLt2M;
         return isLt2M;
-      },
-      downloadPic:function(){
-        //   $("#tpdown").attr("href",'http://image.zcool.com.cn/avatar/17/71/m_1265382211497.jpg');
-      },
-      detail(){
-        let id=this.$route.query.id
-        let param = qs.stringify({'id':id})
-        let that=this
-        this.axios.get(this.biz.serverUrl+'signin/getSigninById?id='+id,{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(function (res) {
-          console.log(res)
-          if(res.data.code==200){
-            that.ruleForm.name=res.data.element.name;
-            that.ruleForm.trainStartDate=res.data.element.trainStartDate;
-            that.ruleForm.trainEndDate=res.data.element.trainEndDate;
-            that.ruleForm.signTimeType=res.data.element.signTimeType+'';
-            that.ruleForm.status=res.data.element.status+'';
-            that.ruleForm.coverPicUrl=res.data.element.coverPicUrl
-            that.ruleForm.amStartTime=res.data.element.amStartTime
-            that.ruleForm.amEndTime=res.data.element.amEndTime
-            that.ruleForm.pmStartTime=res.data.element.pmStartTime
-            that.ruleForm.pmEndTime=res.data.element.pmEndTime
-            that.ruleForm.isEnrol=Number(res.data.element.isEnrol)
-            res.data.element.qrCodeAdmin.split(',')
-            res.data.element.qrCodeAdmin.split(',').forEach(function(v,i){
-                if(i==0){
-                    that.ruleForm.domains[i].value=v
-                }else{
-                    that.ruleForm.domains.push({
-                        value: v,
-                        key: Date.now()
-                    })
-                }
-            })
-            // console.log(res.data.element.qrCodeAdmin.split(','))
-          }
-        }).catch(function (res) {
-          console.log(res)
-        })
       },
       train(){
         let that = this
@@ -515,18 +478,9 @@
           console.log(res)
         })
       },
-      deleName(){
-          if(this.ruleForm.isEnrol==1){
-              this.readonly=true
-          }else if(this.ruleForm.isEnrol==0){
-              this.readonly=false
-          }
-          this.ruleForm.name=''
-          this.ruleForm.trainStartDate=''
-          this.ruleForm.trainEndDate=''
-          this.ruleForm.coverPicUrl=''
-          
-      },
+      downloadPic:function(){
+        //   $("#tpdown").attr("href",'http://image.zcool.com.cn/avatar/17/71/m_1265382211497.jpg');
+      }
     }
   }
 </script>

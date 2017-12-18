@@ -76,109 +76,105 @@
                 <el-option label="每天签到两次" value="2"></el-option>
                 </el-select>
             </el-form-item>
-            <div v-if="ruleForm.signTimeType==1">
-                <el-form-item label="签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="amStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amStartTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="amEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amEndTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
-                </el-form-item>
-            </div>
-            <div v-if="ruleForm.signTimeType==2">
-                <el-form-item label="上午签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="amStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amStartTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '12:00'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="amEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.amEndTime"
-                                :picker-options="{
-                                start: '00:00',
-                                step: '00:15',
-                                end: '12:00'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
-                </el-form-item>
-                <el-form-item label="下午签到时刻范围" required>
-                    <template>
-                        <el-col :span="6">
-                        <el-form-item prop="pmStartTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.pmStartTime"
-                                :picker-options="{
-                                start: '12:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                        <el-col class="line" :span="1">-</el-col>
-                        <el-col :span="6">
-                        <el-form-item prop="pmEndTime">
-                            <el-time-select
-                                placeholder="起始时间"
-                                v-model="ruleForm.pmEndTime"
-                                :picker-options="{
-                                start: '12:00',
-                                step: '00:15',
-                                end: '23:59'
-                                }">
-                            </el-time-select>
-                            <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
-                        </el-form-item>
-                        </el-col>
-                    </template>
-                </el-form-item>
-            </div>
+            <el-form-item label="签到时刻范围" required v-if="ruleForm.signTimeType==1">
+                <template>
+                    <el-col :span="6">
+                    <el-form-item prop="amStartTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.amStartTime"
+                            :picker-options="{
+                            start: '00:00',
+                            step: '00:15',
+                            end: '23:59'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="6">
+                    <el-form-item prop="amEndTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.amEndTime"
+                            :picker-options="{
+                            start: '00:00',
+                            step: '00:15',
+                            end: '23:59'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                </template>
+            </el-form-item>
+            <el-form-item label="上午签到时刻范围" required v-if="ruleForm.signTimeType==2">
+                <template>
+                    <el-col :span="6">
+                    <el-form-item prop="amStartTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.amStartTime"
+                            :picker-options="{
+                            start: '00:00',
+                            step: '00:15',
+                            end: '12:00'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="6">
+                    <el-form-item prop="amEndTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.amEndTime"
+                            :picker-options="{
+                            start: '00:00',
+                            step: '00:15',
+                            end: '12:00'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.amEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                </template>
+            </el-form-item>
+            <el-form-item label="下午签到时刻范围" required v-if="ruleForm.signTimeType==2">
+                <template>
+                    <el-col :span="6">
+                    <el-form-item prop="pmStartTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.pmStartTime"
+                            :picker-options="{
+                            start: '12:00',
+                            step: '00:15',
+                            end: '23:59'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmStartTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                    <el-col class="line" :span="1">-</el-col>
+                    <el-col :span="6">
+                    <el-form-item prop="pmEndTime">
+                        <el-time-select
+                            placeholder="起始时间"
+                            v-model="ruleForm.pmEndTime"
+                            :picker-options="{
+                            start: '12:00',
+                            step: '00:15',
+                            end: '23:59'
+                            }">
+                        </el-time-select>
+                        <!-- <el-time-picker type="fixed-time" placeholder="选择时间" v-model="ruleForm.pmEndTime" style="width: 100%;" format='HH:mm:ss' value-format="HH:mm:ss"></el-time-picker> -->
+                    </el-form-item>
+                    </el-col>
+                </template>
+            </el-form-item>
             <!-- <el-form-item label="状态" prop="status">
                 <el-select v-model="ruleForm.status" placeholder="请选择">
                 <el-option label="禁用" value="0"></el-option>
@@ -205,9 +201,9 @@
                 </template>    
             
             </el-form-item>
-            <!-- <el-form-item label-width="190px">
+            <el-form-item label-width="190px">
                 <el-button @click="addDomain">新增用户</el-button>
-            </el-form-item> -->
+            </el-form-item>
             <el-form-item label-width="190px">
                 <el-button type="primary" @click="submitForm('ruleForm')">确定</el-button>
                 <el-button @click="goback()">返回</el-button>
@@ -254,9 +250,6 @@
     }
     .addcode{
         /* margin-top:20px; */
-    }
-    .el-date-editor.el-input{
-        width:100%;
     }
 </style>
 <script>
@@ -312,7 +305,6 @@
           }],
           isEnrol:1
         },
-        kong:'aaaaa',
         action:this.biz.serverUrl+'signin/upload/',
         imageUrl:'',
         rules: {
