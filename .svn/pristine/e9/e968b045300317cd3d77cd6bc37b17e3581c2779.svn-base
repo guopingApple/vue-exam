@@ -95,7 +95,6 @@
                     if (res.data.paper.duration !=null && !res.data.paper.startTime!=null && !res.data.paper.endTime!=null) {
                         that.paperSet = res.data.paper
                     }else{
-                        that.paperSet.id = res.data.paper.id
                         that.paperSet.picUrl = res.data.paper.picUrl
                     }
                     that.paperSet.startTime = that.paperSet.startTime.substring(0,13)
